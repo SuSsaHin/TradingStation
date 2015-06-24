@@ -39,14 +39,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TradeAdvisor.cs" />
     <Compile Include="CandlesFormer.cs" />
-    <Compile Include="ExtremumsFinder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RobotContext.cs" />
-    <Compile Include="States\EndState.cs" />
+    <Compile Include="StatesFactory.cs" />
+    <Compile Include="States\End\EndState.cs" />
     <Compile Include="States\IState.cs" />
-    <Compile Include="States\SearchState.cs" />
-    <Compile Include="States\TradeState.cs" />
+    <Compile Include="States\Search\SearchState.cs" />
+    <Compile Include="States\Trade\BasicTradeState.cs" />
+    <Compile Include="TradeParams.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Utils\Utils.csproj">

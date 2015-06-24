@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using StatesRobot.States.End;
+using StatesRobot.States.Trade;
 using Utils.Events;
 using Utils.Types;
 
-namespace StatesRobot.States
+namespace StatesRobot.States.Search
 {
 	class SearchState : IState
 	{
@@ -27,7 +29,7 @@ namespace StatesRobot.States
 			if (secondExtremum.IsMinimum != isTrendLong)
 				return new SecondExtremumEvent(secondExtremum, firstLongExtremums, firstShortExtremums);
 
-			context.CurrentState = new TradeState(candle.Close, isTrendLong);
+			context.CurrentState = new BasicTradeState(candle.Close, isTrendLong);
 			return new DealEvent(isTrendLong, candle.Close, secondExtremum, firstLongExtremums, firstShortExtremums);
 		}
 

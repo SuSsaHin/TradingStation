@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace StatesRobot
 {
-	class TradeParams
+	public class TradeParams
 	{
 	}
 }

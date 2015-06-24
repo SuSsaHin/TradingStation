@@ -1,7 +1,7 @@
 ﻿using Utils.Events;
 using Utils.Types;
 
-namespace StatesRobot.States
+namespace StatesRobot.States.End
 {
 	class EndState : IState
 	{

@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Linq;
+using StatesRobot.States.End;
 using Utils.Events;
 using Utils.Types;
 
-namespace StatesRobot.States
+namespace StatesRobot.States.Trade
 {
-	class TradeState : IState
+	class BasicTradeState : IState
 	{
 		private readonly int startPrice;
 		private readonly bool isTrendLong;
 		private bool hasBreakeven;
 		private readonly TimeSpan endTime = new TimeSpan(23, 30, 0);
 
-		public TradeState(int startPrice, bool isTrendLong)
+		public BasicTradeState(int startPrice, bool isTrendLong)
 		{
 			this.startPrice = startPrice;
 			this.isTrendLong = isTrendLong;
