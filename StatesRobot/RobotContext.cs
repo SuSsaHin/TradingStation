@@ -11,11 +11,10 @@ namespace StatesRobot
 		private readonly CandlesFormer candlesFormer = new CandlesFormer();
 		internal StatesFactory Factory { get; private set; }
 		internal TradeAdvisor Advisor { get; private set; }
-
 		internal int StopLoss { get; set; }
 		internal double BreakevenPercent { get; private set; }
 		internal int PegTopSize { get; private set; }
-
+		
 		internal List<Candle> Candles { get; private set; }
 
 		internal IState CurrentState { get; set; }
