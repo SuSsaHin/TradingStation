@@ -75,19 +75,22 @@ namespace Utils.Types
             get { return Math.Abs(Open - Close); }
 	    }
 
-		public void AppendTick(Tick tick)
+		public bool AppendTick(Tick tick)
 		{
 			if ((Ticks.Any() && tick.DateTime <= Ticks[Ticks.Count - 1].DateTime))
 				throw new Exception("Appended tick time is lower then last");
 
 			if ((tick.DateTime - Ticks.First().DateTime).TotalMinutes > PeriodMins)
-				throw new Exception("Too long ticks interval");
+				return true;
+				//throw new Exception("Too long ticks interval");
 
 			Ticks.Add(tick);
 
 			High = Math.Max(tick.Value, High);
 			Low = Math.Min(tick.Value, Low);
 			Close = tick.Value;
+
+			return false;
 		}
 
 		public override string ToString()

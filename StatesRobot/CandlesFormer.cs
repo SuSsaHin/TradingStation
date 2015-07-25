@@ -7,19 +7,22 @@ namespace StatesRobot
 	class CandlesFormer
 	{
 		private Candle candle;
-		private const int periodMins = 5;
+		private const int periodMins = 5;	//TODO configs
 
 		public Candle AddTick(Tick tick)
 		{
 			try
 			{
-				candle.AppendTick(tick);
+				if (candle.AppendTick(tick))
+				{
+					var res = candle;
+					candle = new Candle(new List<Tick> { tick }, periodMins);
+					return res;
+				}
 			}
-			catch (Exception)
+			catch (Exception ex)	
 			{
-				var res = candle;
-				candle = new Candle(new List<Tick>{tick}, periodMins);
-				return res;
+				//TODO Logs
 			}
 
 			return candle;
