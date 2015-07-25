@@ -8,50 +8,40 @@ namespace StatesRobot.States.Trade
 {
 	class BasicTradeState : IState
 	{
-		private readonly int startPrice;
-		private readonly bool isTrendLong;
-		private bool hasBreakeven;
-		private readonly TimeSpan endTime = new TimeSpan(23, 30, 0);
+		protected int StartPrice { get; private set; }
+		protected bool IsTrendLong { get; private set; }
+
+		private readonly TimeSpan endTime = new TimeSpan(23, 30, 0);	//TODO configs
 
 		public BasicTradeState(int startPrice, bool isTrendLong)
 		{
-			this.startPrice = startPrice;
-			this.isTrendLong = isTrendLong;
+			StartPrice = startPrice;
+			IsTrendLong = isTrendLong;
 		}
 
-		public ITradeEvent Process(RobotContext context, Candle candle)
+		public virtual ITradeEvent Process(RobotContext context, Candle candle)
 		{
 			if (candle.Time >= endTime)
 			{
 				context.CurrentState = new EndState();
-				return new DealEvent(!isTrendLong, candle.Close);
+				return new DealEvent(!IsTrendLong, candle.Close);
 			}
 
 			int endPrice;
-			if (isTrendLong && candle.Low <= (endPrice = startPrice - context.StopLoss) ||
-				!isTrendLong && candle.High >= (endPrice = startPrice + context.StopLoss))
+			if (IsTrendLong && candle.Low <= (endPrice = StartPrice - context.StopLoss) ||
+				!IsTrendLong && candle.High >= (endPrice = StartPrice + context.StopLoss))
 			{
 				context.CurrentState = new EndState();
-				return new StopLossEvent(isTrendLong, endPrice);
-			}
-
-			if (!hasBreakeven &&
-				(isTrendLong && candle.High >= startPrice + context.StopLoss ||
-				!isTrendLong && candle.Low <= startPrice - context.StopLoss))
-			{
-				hasBreakeven = true;
-
-				context.StopLoss = -(int)(context.StopLoss * context.BreakevenPercent);
-				return new BreakevenEvent(isTrendLong ? startPrice - context.StopLoss : startPrice + context.StopLoss, isTrendLong);
+				return new StopLossEvent(IsTrendLong, endPrice);
 			}
 			
 			return null;
 		}
 
-		public ITradeEvent StopTrading(RobotContext context)
+		public virtual ITradeEvent StopTrading(RobotContext context)
 		{
 			context.CurrentState = new EndState();
-			return new DealEvent(!isTrendLong, context.Candles.Last().Close);
+			return new DealEvent(!IsTrendLong, context.Candles.Last().Close);
 		}
 	}
 }

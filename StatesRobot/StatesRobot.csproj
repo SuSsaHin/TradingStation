@@ -39,6 +39,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="States\Trade\DynamicTradeState.cs" />
+    <Compile Include="States\Trade\BreakevenTradeState.cs" />
     <Compile Include="TradeAdvisor.cs" />
     <Compile Include="CandlesFormer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

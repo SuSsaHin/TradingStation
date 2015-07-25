@@ -43,7 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EventBus.cs" />
-    <Compile Include="Events\BreakevenEvent.cs" />
+    <Compile Include="Events\StopLossMovingEvent.cs" />
     <Compile Include="Events\DealEvent.cs" />
     <Compile Include="Events\EndEvent.cs" />
     <Compile Include="Events\ITradeEvent.cs" />

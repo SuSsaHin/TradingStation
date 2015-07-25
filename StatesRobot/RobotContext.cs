@@ -12,6 +12,7 @@ namespace StatesRobot
 		internal StatesFactory Factory { get; private set; }
 		internal TradeAdvisor Advisor { get; private set; }
 		internal int StopLoss { get; set; }
+		internal int DynamicStopLoss { get; private set; }
 		internal double BreakevenPercent { get; private set; }
 		internal int PegTopSize { get; private set; }
 		

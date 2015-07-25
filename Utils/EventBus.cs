@@ -22,9 +22,9 @@ namespace Utils
 		public void FireEvent(ITradeEvent fired)
 		{
 			Type key;
-			if (fired is BreakevenEvent)
+			if (fired is StopLossMovingEvent)
 			{
-				key = ((BreakevenEvent) fired).GetType();
+				key = ((StopLossMovingEvent) fired).GetType();
 			}
 			else if (fired is DealEvent)
 			{

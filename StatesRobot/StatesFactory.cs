@@ -10,7 +10,7 @@ namespace StatesRobot
 	{
 		public enum TradeStateTypes
 		{
-			Classic,
+			Basic,
 			Breakeven,
 			Dynamic
 		}
@@ -26,14 +26,14 @@ namespace StatesRobot
 		{
 			switch (tradeStateType)
 			{
-				case TradeStateTypes.Breakeven:
-					throw new NotImplementedException("Not implemented trade state type");
-				case TradeStateTypes.Dynamic:
-					throw new NotImplementedException("Not implemented trade state type");
-				case TradeStateTypes.Classic:
+				case TradeStateTypes.Basic:
 					return new BasicTradeState(startPrice, isTrendLong);
+				case TradeStateTypes.Breakeven:
+					return new BreakevenTradeState(startPrice, isTrendLong);
+				case TradeStateTypes.Dynamic:
+					return new DynamicTradeState(startPrice, isTrendLong);
 				default:
-					throw new NotImplementedException("Not expected trade state type");
+					throw new ArgumentException("Not expected trade state type");
 			}
 		}
 
