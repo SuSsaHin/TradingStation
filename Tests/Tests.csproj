@@ -53,6 +53,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="ConfigsReader.cs" />
     <Compile Include="UnitTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -60,6 +61,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\StatesRobot\StatesRobot.csproj">
+      <Project>{6729A7A8-4A00-4528-A91A-8511FA85E903}</Project>
+      <Name>StatesRobot</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Utils\Utils.csproj">
       <Project>{3FDCCC9C-056F-4ADD-AB19-88EC6A84F280}</Project>
       <Name>Utils</Name>
