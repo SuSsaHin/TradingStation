@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using StatesRobot.States.End;
 using StatesRobot.States.Trade;
@@ -9,28 +10,28 @@ namespace StatesRobot.States.Search
 {
 	class SearchState : IState
 	{
-		private readonly ExtremumsFinder extremumFinder;
-
 		public SearchState(RobotContext context)
 		{
-			extremumFinder = new ExtremumsFinder(context.PegTopSize);
+			throw new NotImplementedException();
 		}
 
 		public ITradeEvent Process(RobotContext context, Candle candle)
 		{
-			var firstLongExtremums = extremumFinder.FindFirstExtremums(context.Candles, true);
-			var firstShortExtremums = extremumFinder.FindFirstExtremums(context.Candles, false);
+			throw new NotImplementedException();
 
-			var secondExtremum = extremumFinder.FindLastSecondExtremum(firstLongExtremums, firstShortExtremums, context.Candles.Count - 1);
-			if (secondExtremum == null)
-				return new SearchInfoEvent(firstLongExtremums, firstShortExtremums);
+			//var firstLongExtremums = extremumFinder.FindFirstExtremums(context.Candles, true);
+			//var firstShortExtremums = extremumFinder.FindFirstExtremums(context.Candles, false);
 
-			bool isTrendLong = IsTrendLong(context.Candles);
-			if (secondExtremum.IsMinimum != isTrendLong)
-				return new SecondExtremumEvent(secondExtremum, firstLongExtremums, firstShortExtremums);
+			//var secondExtremum = extremumFinder.FindLastSecondExtremum(firstLongExtremums, firstShortExtremums, context.Candles.Count - 1);
+			//if (secondExtremum == null)
+			//	return new SearchInfoEvent(firstLongExtremums, firstShortExtremums);
 
-			context.CurrentState = new BasicTradeState(candle.Close, isTrendLong);
-			return new DealEvent(isTrendLong, candle.Close, secondExtremum, firstLongExtremums, firstShortExtremums);
+			//bool isTrendLong = IsTrendLong(context.Candles);
+			//if (secondExtremum.IsMinimum != isTrendLong)
+			//	return new SecondExtremumEvent(secondExtremum, firstLongExtremums, firstShortExtremums);
+
+			//context.CurrentState = new BasicTradeState(candle.Close, isTrendLong);
+			//return new DealEvent(isTrendLong, candle.Close, secondExtremum, firstLongExtremums, firstShortExtremums);
 		}
 
 		public ITradeEvent StopTrading(RobotContext context)
@@ -38,9 +39,7 @@ namespace StatesRobot.States.Search
 			context.CurrentState = new EndState();
 			return new EndEvent();
 		}
-
 		
-
 		private bool IsTrendLong(List<Candle> candles)
 		{
 			return candles[candles.Count - 1].Close > candles.First().Open;

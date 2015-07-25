@@ -8,7 +8,7 @@ namespace StatesRobot
 {
 	public class StatesFactory
 	{
-		internal enum TradeStateTypes
+		public enum TradeStateTypes
 		{
 			Classic,
 			Breakeven,
@@ -36,7 +36,7 @@ namespace StatesRobot
 					throw new NotImplementedException("Not expected trade state type");
 			}
 		}
-		
+
 		public IState GetSearchState(RobotContext context)
 		{
 			return new SearchState(context);
