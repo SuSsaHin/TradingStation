@@ -4,6 +4,9 @@
 	public class TradeParams
 	{
 		//TODO Params
-		[FieldName("StopLoss")] public int StopLoss;
+		[FieldName("Stop Loss")]
+		public int StopLoss;
+		[FieldName("Dynamic Stop Loss")]
+		public int DynamicStopLoss;
 	}
 }
