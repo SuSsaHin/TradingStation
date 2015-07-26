@@ -1,63 +1,55 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 using System.Reflection;
-using StatesRobot;
+using Utils.XmlProcessing;
 
 namespace Tests.Tools
 {
-	class LoopsGenerator
+	static class LoopsGenerator<TFieldsContainer>
 	{
-		private readonly Dictionary<string, Action<TradeParams, decimal>> setters;
-		
-		public LoopsGenerator()
-		{
-			setters = new Dictionary<string, Action<TradeParams, decimal>>();
-
-			var namedFields = typeof(TradeParams).GetFields().Where(f => f.GetCustomAttributes(typeof (FieldNameAttribute)).Any());
-			foreach (var field in namedFields)
-			{
-				var locField = field;
-				var name = ((FieldNameAttribute) (locField.GetCustomAttribute(typeof (FieldNameAttribute)))).Name.ToLower();
-				var parseMethod = locField.FieldType.GetMethod("Parse", new[] {typeof (string), typeof (IFormatProvider)});
-				if (parseMethod == null)
-				{
-					throw new NotImplementedException("AZAZA");
-					setters[name] = (tp, d) => locField.SetValue(tp, Convert.ChangeType(d, locField.FieldType));
-				}
-				else
-				{
-					setters[name] = (tp, d) => locField.SetValue(tp, parseMethod.Invoke(null, new object[]{d, new CultureInfo("en-us") }));
-				}
-			}
-		}
-
-		public void RunLoops(IEnumerable<Loop> fields, Action<TradeParams> test)
-		{
-			var action = GenerateLoops(fields, test);
-			action();
-		}
-
-		public Action GenerateLoops(IEnumerable<Loop> fields, Action<TradeParams> test)
-		{
-			var resFunc = fields.Reverse().Aggregate(test, AppendLoop);
-			return () => resFunc(new TradeParams());
-		}
-
-		private Action<TradeParams> AppendLoop(Action<TradeParams> func, Loop loop)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <typeparam name="T">T should be a type of field</typeparam>
+		/// <param name="func"></param>
+		/// <param name="loop"></param>
+		/// <returns></returns>
+		public static Action<TFieldsContainer> AppendLoop<T>(Action<TFieldsContainer> func, Loop<T> loop) where T : IComparable
 		{
 			var name = loop.FieldName.ToLower();
-			if (!setters.ContainsKey(name))
+			if (!XmlToFieldsMapper.Fields.ContainsKey(name))
 				throw new MissingFieldException("Can't loop field " + loop.FieldName);
+
+			var addOp = typeof (T).GetMethod("op_Addition", BindingFlags.Static | BindingFlags.Public);
+			if (addOp == null)
+				throw new ArithmeticException("Type " + typeof(T).Name + " doesn't contains + operator");
 
 			return tp =>
 			{
-				for (decimal i = loop.Start; i <= loop.End; i += loop.Step)
+				for (T i = loop.Start; i.CompareTo(loop.End) < 0; addOp.Invoke(null, new object[]{i, loop.Step}))
 				{
-					setters[name](tp, i);
+					XmlToFieldsMapper.Fields[name].SetValue(tp, i);
 					func(tp);
 				}
+			};
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <typeparam name="T">T should be a type of field</typeparam>
+		/// <param name="func"></param>
+		/// <param name="fieldName"></param>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		public static Action<TFieldsContainer> AppendValue<T>(Action<TFieldsContainer> func, string fieldName, T value)
+		{
+			if (!XmlToFieldsMapper.Fields.ContainsKey(fieldName))
+				throw new MissingFieldException("Can't loop field " + fieldName);
+
+			return tp =>
+			{
+				XmlToFieldsMapper.Fields[fieldName].SetValue(tp, value);
+				func(tp);
 			};
 		}
 	}

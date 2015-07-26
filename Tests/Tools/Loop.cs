@@ -1,10 +1,10 @@
 ﻿namespace Tests.Tools
 {
-	struct Loop
+	struct Loop<T>
 	{
 		public string FieldName;
-		public decimal Start;
-		public decimal End;
-		public decimal Step;
+		public T Start;
+		public T End;
+		public T Step;
 	}
 }

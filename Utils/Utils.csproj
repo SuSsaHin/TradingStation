@@ -58,8 +58,11 @@
     <Compile Include="Types\Deal.cs" />
     <Compile Include="Types\Extremum.cs" />
     <Compile Include="Types\Tick.cs" />
+    <Compile Include="Types\TradeParams.cs" />
     <Compile Include="Types\TradesResult.cs" />
     <Compile Include="Utils.cs" />
+    <Compile Include="XmlProcessing\FieldNameAttribute.cs" />
+    <Compile Include="XmlProcessing\XmlToFieldsMapper.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

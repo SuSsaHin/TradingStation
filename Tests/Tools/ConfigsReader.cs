@@ -2,15 +2,17 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Xml.Linq;
 using StatesRobot;
+using Utils.Types;
 
 namespace Tests.Tools
 {
 	class ConfigsReader
 	{
-		public List<Loop> Loops { get; private set; }
 		public StatesFactory Factory { get; private set; }
+		public Action<TradeParams, Action<TradeParams>> LoopAction { get; private set; } 
 
 		public ConfigsReader(string configsName)
 		{
@@ -22,12 +24,15 @@ namespace Tests.Tools
 
 		private void InitLoops(XElement parameters)
 		{
-			Loops = new List<Loop>();
+			LoopAction = (tp, act) => act(tp);
+			Action<TradeParams> action;
 			foreach (var p in parameters.Descendants())
 			{
 				var sizeAttr = p.Attribute("Size");
+				var parseMethod = typeof (T).GetMethod("op_Addition", BindingFlags.Static | BindingFlags.Public);
 				if (sizeAttr != null)
 				{
+					action = LoopsGenerator<TradeParams>.AppendValue(action, p.Name.LocalName, )
 					decimal size = Decimal.Parse(sizeAttr.Value, new CultureInfo("en-us"));
 					Loops.Add(new Loop{Start = size, End = size, Step = Decimal.MaxValue, FieldName = p.Name.LocalName});
 				}

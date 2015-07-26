@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace StatesRobot
+namespace Utils.XmlProcessing
 {
 	[AttributeUsage(AttributeTargets.Field)]
 	public class FieldNameAttribute : Attribute

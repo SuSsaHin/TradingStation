@@ -39,7 +39,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FieldNameAttribute.cs" />
     <Compile Include="States\Trade\DynamicTradeState.cs" />
     <Compile Include="States\Trade\BreakevenTradeState.cs" />
     <Compile Include="TradeAdvisor.cs" />
@@ -51,7 +50,6 @@
     <Compile Include="States\IState.cs" />
     <Compile Include="States\Search\SearchState.cs" />
     <Compile Include="States\Trade\BasicTradeState.cs" />
-    <Compile Include="TradeParams.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Utils\Utils.csproj">
