@@ -4,20 +4,13 @@ using System.Linq;
 using System.Reflection;
 using StatesRobot;
 
-namespace Tests
+namespace Tests.Tools
 {
-	struct Loop
-	{
-		public string FieldName;
-		public decimal Start;
-		public decimal End;
-		public decimal Step;
-	}
-	class ConfigsReader
+	class LoopsGenerator
 	{
 		private readonly Dictionary<string, Action<TradeParams, decimal>> setters;
 		
-		public ConfigsReader()
+		public LoopsGenerator()
 		{
 			setters = new Dictionary<string, Action<TradeParams, decimal>>();
 
@@ -35,6 +28,7 @@ namespace Tests
 			var action = GenerateLoops(fields, test);
 			action();
 		}
+
 		public Action GenerateLoops(IEnumerable<Loop> fields, Action<TradeParams> test)
 		{
 			var resFunc = fields.Reverse().Aggregate(test, AppendLoop);

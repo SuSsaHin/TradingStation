@@ -39,6 +39,8 @@
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -53,7 +55,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="ConfigsReader.cs" />
+    <Compile Include="Tools\ConfigsReader.cs" />
+    <Compile Include="Tools\Loop.cs" />
+    <Compile Include="Tools\LoopsGenerator.cs" />
     <Compile Include="UnitTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -90,6 +94,16 @@
   </Choose>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>if not exist $(TargetDir)Configs\ md $(TargetDir)Configs\
+xcopy /D /E $(SolutionDir)Resources\TestsConfigs\* $(TargetDir)Configs\
+if not exist $(TargetDir)History\ md $(TargetDir)History\
+xcopy /D /E $(SolutionDir)Resources\History\* $(TargetDir)History\</PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>
+</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

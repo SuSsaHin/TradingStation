@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Tests>
+	<Test tool="RTS-15">
+		<Types>
+			<Stop>trailing</Stop>
+		</Types>
+		<Params>
+			<StopLoss Start="200" End="1000" Step="200"/>
+			<!--breakeven-->
+			<TrailingStopPercent Start="0.6" End="1.8" Step="0.1" />
+			<Pegtop Size="70" />
+		</Params>
+	</Test>
+</Tests>

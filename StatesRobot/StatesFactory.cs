@@ -12,25 +12,25 @@ namespace StatesRobot
 		{
 			Basic,
 			Breakeven,
-			Dynamic
+			Trailing
 		}
 
-		private readonly TradeStateTypes tradeStateType;
+		public TradeStateTypes TradeStateType { get; private set; }
 
 		public StatesFactory(TradeStateTypes tradeStateType)
 		{
-			this.tradeStateType = tradeStateType;
+			this.TradeStateType = tradeStateType;
 		}
 
 		public IState GetTradeState(int startPrice, bool isTrendLong, RobotContext context)
 		{
-			switch (tradeStateType)
+			switch (TradeStateType)
 			{
 				case TradeStateTypes.Basic:
 					return new BasicTradeState(startPrice, isTrendLong);
 				case TradeStateTypes.Breakeven:
 					return new BreakevenTradeState(startPrice, isTrendLong);
-				case TradeStateTypes.Dynamic:
+				case TradeStateTypes.Trailing:
 					return new DynamicTradeState(startPrice, isTrendLong);
 				default:
 					throw new ArgumentException("Not expected trade state type");

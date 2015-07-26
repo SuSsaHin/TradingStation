@@ -4,9 +4,13 @@
 	public class TradeParams
 	{
 		//TODO Params
-		[FieldName("Stop Loss")]
+		[FieldName("StopLoss")]
 		public int StopLoss;
-		[FieldName("Dynamic Stop Loss")]
-		public int DynamicStopLoss;
+	
+		[FieldName("TrailingStopPercent")]
+		public decimal TrailingStopPercent;
+
+		[FieldName("Pegtop")]
+		public decimal PegtopSize;
 	}
 }
