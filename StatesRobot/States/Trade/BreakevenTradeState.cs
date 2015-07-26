@@ -24,7 +24,7 @@ namespace StatesRobot.States.Trade
 			{
 				hasBreakeven = true;
 
-				context.StopLoss = -(int)(context.StopLoss * context.BreakevenPercent);
+				context.StopLoss = -context.BreakevenSize;
 				return new StopLossMovingEvent(IsTrendLong ? StartPrice - context.StopLoss : StartPrice + context.StopLoss, IsTrendLong);
 			}
 			

@@ -1,16 +1,23 @@
-﻿namespace StatesRobot
+﻿using System;
+
+namespace StatesRobot
 {
-	
+
 	public class TradeParams
 	{
-		//TODO Params
 		[FieldName("StopLoss")]
 		public int StopLoss;
-	
+
+		[FieldName("BreakevenPercent")]
+		public decimal BreakevenPercent;
+
 		[FieldName("TrailingStopPercent")]
 		public decimal TrailingStopPercent;
 
 		[FieldName("Pegtop")]
-		public decimal PegtopSize;
+		public int PegtopSize;
+
+		[FieldName("EndTime")]
+		public TimeSpan EndTime;
 	}
 }

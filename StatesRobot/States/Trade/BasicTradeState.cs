@@ -11,8 +11,6 @@ namespace StatesRobot.States.Trade
 		protected int StartPrice { get; private set; }
 		protected bool IsTrendLong { get; private set; }
 
-		private readonly TimeSpan endTime = new TimeSpan(23, 30, 0);	//TODO configs
-
 		public BasicTradeState(int startPrice, bool isTrendLong)
 		{
 			StartPrice = startPrice;
@@ -21,7 +19,7 @@ namespace StatesRobot.States.Trade
 
 		public virtual ITradeEvent Process(RobotContext context, Candle candle)
 		{
-			if (candle.Time >= endTime)
+			if (candle.Time >= context.EndTime)
 			{
 				context.CurrentState = new EndState();
 				return new DealEvent(!IsTrendLong, candle.Close);

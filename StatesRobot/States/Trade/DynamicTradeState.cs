@@ -17,8 +17,8 @@ namespace StatesRobot.States.Trade
 				return result;
 
 			int dynamicPrice;
-			if (IsTrendLong && candle.High >= (dynamicPrice = StartPrice + context.DynamicStopLoss) ||
-				!IsTrendLong && candle.Low <= (dynamicPrice = StartPrice - context.DynamicStopLoss))
+			if (IsTrendLong && candle.High >= (dynamicPrice = StartPrice + context.TrailingStopLoss) ||
+				!IsTrendLong && candle.Low <= (dynamicPrice = StartPrice - context.TrailingStopLoss))
 			{
 				context.StopLoss = StartPrice - dynamicPrice;
 				return new StopLossMovingEvent(dynamicPrice, IsTrendLong);
