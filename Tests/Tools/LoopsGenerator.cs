@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using StatesRobot;
@@ -19,7 +20,16 @@ namespace Tests.Tools
 			{
 				var locField = field;
 				var name = ((FieldNameAttribute) (locField.GetCustomAttribute(typeof (FieldNameAttribute)))).Name.ToLower();
-				setters[name] = (tp, d) => { locField.SetValue(tp, Convert.ChangeType(d, locField.FieldType)); };
+				var parseMethod = locField.FieldType.GetMethod("Parse", new[] {typeof (string), typeof (IFormatProvider)});
+				if (parseMethod == null)
+				{
+					throw new NotImplementedException("AZAZA");
+					setters[name] = (tp, d) => locField.SetValue(tp, Convert.ChangeType(d, locField.FieldType));
+				}
+				else
+				{
+					setters[name] = (tp, d) => locField.SetValue(tp, parseMethod.Invoke(null, new object[]{d, new CultureInfo("en-us") }));
+				}
 			}
 		}
 

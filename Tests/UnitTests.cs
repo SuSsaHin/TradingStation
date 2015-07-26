@@ -81,5 +81,14 @@ namespace Tests
 			Assert.That(cr.Loops[2].End == 70);
 			Assert.That(cr.Loops[2].Step == decimal.MaxValue);
 		}
+
+		[TestMethod]
+		public void TestTimeParse()
+		{
+			var type = typeof (StatesFactory);
+			var method = type.GetMethod("Parse", new Type[] {typeof (string), typeof (IFormatProvider)});
+			var res = Convert.ChangeType("23:30", typeof (TimeSpan));
+			res.GetType();
+		}
 	}
 }
