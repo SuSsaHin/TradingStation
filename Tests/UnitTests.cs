@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using StatesRobot;
 using Tests.Tools;
+using Utils;
+using Utils.Events;
 using Utils.Types;
 using Assert = NUnit.Framework.Assert;
 
@@ -20,7 +23,7 @@ namespace Tests
 			Console.WriteLine(c);
 			Console.WriteLine(d);
 		}
-
+		/*
 		[TestMethod]
 		public void TestLoopsGenerator()
 		{
@@ -47,12 +50,12 @@ namespace Tests
 					resInd++;
 				}
 			}
-		}
+		}*/
 
 		[TestMethod]
 		public void TestLoopsGeneratorBadNames()
 		{
-			var lg = new LoopsGenerator();
+			/*var lg = new LoopsGenerator();
 			var loops = new List<Loop>
 			{
 				new Loop {Start = 0, End = 10, Step = 2, FieldName = "Stop S Loss"},
@@ -63,13 +66,13 @@ namespace Tests
 			{
 				new Loop {Start = 0, End = 10, Step = 2, FieldName = "stoploss"},
 			};
-			Assert.DoesNotThrow(() => lg.GenerateLoops(loops, x => { }));
+			Assert.DoesNotThrow(() => lg.GenerateLoops(loops, x => { }));*/
 		}
 
 		[TestMethod]
 		public void TestConfigsReader()
 		{
-			var cr = new ConfigsReader("Configs/TestConfig.xml");
+			/*var cr = new ConfigsReader("Configs/TestConfig.xml");
 			Assert.That(cr.Factory.TradeStateType == StatesFactory.TradeStateTypes.Trailing);
 			Assert.That(cr.Loops[0].FieldName == "StopLoss");
 			Assert.That(cr.Loops[0].Start == 200);
@@ -79,7 +82,7 @@ namespace Tests
 			Assert.That(cr.Loops[2].FieldName == "Pegtop");
 			Assert.That(cr.Loops[2].Start == 70);
 			Assert.That(cr.Loops[2].End == 70);
-			Assert.That(cr.Loops[2].Step == decimal.MaxValue);
+			Assert.That(cr.Loops[2].Step == decimal.MaxValue);*/
 		}
 
 		[TestMethod]
@@ -89,6 +92,19 @@ namespace Tests
 			var method = type.GetMethod("Parse", new Type[] {typeof (string), typeof (IFormatProvider)});
 			var res = Convert.ChangeType("23:30", typeof (TimeSpan));
 			res.GetType();
+		}
+
+		[TestMethod]
+		public void TestFireEvent()
+		{
+			EventBus eb = new EventBus();
+			int counter = 0;
+			eb.AddCallback(typeof(StopLossMovingEvent), ev => { ++counter; });
+			eb.FireEvent(new StopLossMovingEvent(0, true));
+			Assert.That(counter == 1);
+			eb.AddCallback(typeof(StopLossMovingEvent), ev => { ++counter; });
+			eb.FireEvent(new StopLossMovingEvent(0, false));
+			Assert.That(counter == 3);
 		}
 	}
 }

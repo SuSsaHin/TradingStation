@@ -5,61 +5,35 @@ using Utils.Events;
 
 namespace Utils
 {
-	public class EventBus
+	public class EventBus	//TODO добавить асинхронность
 	{
-		private readonly Dictionary<Type, List<Action<ITradeEvent>>> callbacks = new Dictionary<Type, List<Action<ITradeEvent>>>();
+		public delegate void EventCallback(ITradeEvent ev);
+		private readonly Dictionary<Type, EventCallback> delegates = new Dictionary<Type, EventCallback>();
 
-		public void AddCallback(Type eventType, Action<ITradeEvent> callback)
+		public void AddCallback(Type eventType, EventCallback callback)
 		{
-			if (!callbacks.ContainsKey(eventType))
+			if (eventType.GetInterface(typeof(ITradeEvent).Name) == null)
+				throw new ArgumentException("Event type should implements " + typeof(ITradeEvent).Name);
+
+			if (!delegates.ContainsKey(eventType))
 			{
-				callbacks[eventType] = new List<Action<ITradeEvent>>();
+				delegates[eventType] = callback;
+				return;
 			}
 
-			callbacks[eventType].Add(callback);
+			delegates[eventType] += callback;
 		}
 
 		public void FireEvent(ITradeEvent fired)
 		{
-			Type key;
-			if (fired is StopLossMovingEvent)
-			{
-				key = ((StopLossMovingEvent) fired).GetType();
-			}
-			else if (fired is DealEvent)
-			{
-				key = ((DealEvent) fired).GetType();
-			}
-			else if (fired is EndEvent)
-			{
-				key = ((EndEvent) fired).GetType();
-			}
-			else if (fired is StopLossEvent)
-			{
-				key = ((StopLossEvent) fired).GetType();
-			}
-			else if (fired is SecondExtremumEvent)
-			{
-				key = ((SecondExtremumEvent) fired).GetType();
-			}
-			else if (fired is SearchInfoEvent)
-			{
-				key = ((SearchInfoEvent) fired).GetType();
-			}
-			else
-			{
-				throw new ArgumentException("Unexpected event type");
-			}
+			var key = fired.GetType();
 
-			if (!callbacks.ContainsKey(key))
+			if (!delegates.ContainsKey(key))
 				return;
 
 			try
 			{
-				foreach (var callback in callbacks[key])
-				{
-					callback(fired);
-				}
+				delegates[key].Invoke(fired);
 			}
 			catch (Exception ex)
 			{

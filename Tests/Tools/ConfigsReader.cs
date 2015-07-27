@@ -29,7 +29,7 @@ namespace Tests.Tools
 			foreach (var p in parameters.Descendants())
 			{
 				var sizeAttr = p.Attribute("Size");
-				var parseMethod = typeof (T).GetMethod("op_Addition", BindingFlags.Static | BindingFlags.Public);
+				/*var parseMethod = typeof (T).GetMethod("op_Addition", BindingFlags.Static | BindingFlags.Public);
 				if (sizeAttr != null)
 				{
 					action = LoopsGenerator<TradeParams>.AppendValue(action, p.Name.LocalName, )
@@ -45,7 +45,7 @@ namespace Tests.Tools
 						Step = Decimal.Parse(p.Attribute("Step").Value, new CultureInfo("en-us")),
 						FieldName = p.Name.LocalName
 					});
-				}
+				}*/
 			}
 		}
 
