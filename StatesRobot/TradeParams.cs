@@ -1,7 +1,7 @@
 ﻿using System;
 using Utils.XmlProcessing;
 
-namespace Utils.Types
+namespace StatesRobot
 {
 	public class TradeParams
 	{
@@ -19,5 +19,8 @@ namespace Utils.Types
 
 		[FieldName("EndTime")]
 		public TimeSpan EndTime;
+
+		[FieldName("MaxSkippedCount")]
+		public int MaxSkippedCandlesCount;
 	}
 }

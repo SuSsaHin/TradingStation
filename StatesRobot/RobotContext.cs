@@ -16,9 +16,10 @@ namespace StatesRobot
 		internal int TrailingStopLoss { get; private set; }
 		internal int BreakevenSize { get; private set; }
 		internal int PegtopSize { get; private set; }
-		internal TimeSpan EndTime { get; private set; }// = new TimeSpan(23, 30, 0);	//TODO configs
+		internal TimeSpan EndTime { get; private set; }
 		
 		internal List<Candle> Candles { get; private set; }
+		internal int MaxSkippedCandlesCount { get; private set; }
 
 		internal IState CurrentState { get; set; }
 
@@ -33,6 +34,7 @@ namespace StatesRobot
 			BreakevenSize = (int) (StopLoss*tradeParams.BreakevenPercent);
 			PegtopSize = tradeParams.PegtopSize;
 			EndTime = tradeParams.EndTime;
+			MaxSkippedCandlesCount = tradeParams.MaxSkippedCandlesCount;
 
 			CurrentState = new SearchState(this);
 		}

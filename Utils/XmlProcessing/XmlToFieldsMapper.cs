@@ -1,24 +1,33 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Utils.Types;
 
 namespace Utils.XmlProcessing
 {
-	public static class XmlToFieldsMapper
+	public class XmlToFieldsMapper<T>
 	{
-		public static Dictionary<string, FieldInfo> Fields { get; private set; }
+		private readonly Dictionary<string, FieldInfo> fields;
 
-		static XmlToFieldsMapper()
+		public XmlToFieldsMapper()
 		{
-			Fields = new Dictionary<string, FieldInfo>();
+			fields = new Dictionary<string, FieldInfo>();
 
-			var namedFields = typeof(TradeParams).GetFields().Where(f => f.GetCustomAttributes(typeof (FieldNameAttribute)).Any());
+			var namedFields = typeof(T).GetFields().Where(f => f.GetCustomAttributes(typeof (FieldNameAttribute)).Any());
 			foreach (var field in namedFields)
 			{
 				var name = ((FieldNameAttribute)(field.GetCustomAttribute(typeof(FieldNameAttribute)))).Name.ToLower();
-				Fields[name] = field;
+				fields[name] = field;
 			}
+		}
+
+		public FieldInfo GetFieldInfo(string name)
+		{
+			return fields[name];
+		}
+
+		public bool ContainsField(string name)
+		{
+			return fields.ContainsKey(name);
 		}
 	}
 }

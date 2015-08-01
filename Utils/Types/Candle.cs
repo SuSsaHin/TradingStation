@@ -6,39 +6,6 @@ namespace Utils.Types
 {
 	public class Candle
 	{
-		public Candle(List<Tick> ticks, int periodMins)
-		{
-			PeriodMins = periodMins;
-			Ticks = ticks;
-			dateTime = ticks.First().DateTime;
-
-			if (!Ticks.Any() || (Ticks.Last().DateTime - Ticks.First().DateTime).TotalMinutes > PeriodMins)
-				throw new Exception("Too long ticks list");
-
-			Open = Ticks.First().Value;
-			Close = Ticks.Last().Value;
-			High = 0;
-			Low = int.MaxValue;
-
-			foreach (var tick in Ticks)
-			{
-				High = Math.Max(tick.Value, High);
-				Low = Math.Min(tick.Value, Low);
-			}
-		}
-
-		public Candle(DateTime dateTime, int open, int hight, int low, int close, int periodMins)
-		{
-			Open = open;
-			High = hight;
-			Low = low;
-			Close = close;
-
-			PeriodMins = periodMins;
-			this.dateTime = dateTime;
-			Ticks = new List<Tick>();
-		}
-
 		public List<Tick> Ticks { get; private set; }
 
 		public int Open { get; private set; }
@@ -75,6 +42,39 @@ namespace Utils.Types
             get { return Math.Abs(Open - Close); }
 	    }
 
+		public Candle(List<Tick> ticks, int periodMins)
+		{
+			PeriodMins = periodMins;
+			Ticks = ticks;
+			dateTime = ticks.First().DateTime;
+
+			if (!Ticks.Any() || (Ticks.Last().DateTime - Ticks.First().DateTime).TotalMinutes > PeriodMins)
+				throw new Exception("Too long ticks list");
+
+			Open = Ticks.First().Value;
+			Close = Ticks.Last().Value;
+			High = 0;
+			Low = int.MaxValue;
+
+			foreach (var tick in Ticks)
+			{
+				High = Math.Max(tick.Value, High);
+				Low = Math.Min(tick.Value, Low);
+			}
+		}
+
+		public Candle(DateTime dateTime, int open, int hight, int low, int close, int periodMins)
+		{
+			Open = open;
+			High = hight;
+			Low = low;
+			Close = close;
+
+			PeriodMins = periodMins;
+			this.dateTime = dateTime;
+			Ticks = new List<Tick>();
+		}
+
 		public bool AppendTick(Tick tick)
 		{
 			if ((Ticks.Any() && tick.DateTime <= Ticks[Ticks.Count - 1].DateTime))
@@ -91,6 +91,16 @@ namespace Utils.Types
 			Close = tick.Value;
 
 			return false;
+		}
+
+		public bool IsOuterTo(Candle c)
+		{
+			return High >= c.High && Low <= c.Low;
+		}
+
+		public bool IsInnerTo(Candle c)
+		{
+			return High <= c.High && Low >= c.Low;
 		}
 
 		public override string ToString()

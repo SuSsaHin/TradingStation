@@ -3,7 +3,7 @@ using Utils.Types;
 
 namespace Utils.Events
 {
-	public class SearchInfoEvent : ITradeEvent
+	public class SearchInfoEvent : ITradeEvent //TODO убрать
 	{
 		public IReadOnlyList<Extremum> FirstLongExtremums { get; private set; }
 		public IReadOnlyList<Extremum> FirstShortExtremums { get; private set; }

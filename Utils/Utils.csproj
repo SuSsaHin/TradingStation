@@ -58,7 +58,6 @@
     <Compile Include="Types\Deal.cs" />
     <Compile Include="Types\Extremum.cs" />
     <Compile Include="Types\Tick.cs" />
-    <Compile Include="Types\TradeParams.cs" />
     <Compile Include="Types\TradesResult.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="XmlProcessing\FieldNameAttribute.cs" />

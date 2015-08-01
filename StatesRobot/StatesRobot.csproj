@@ -50,6 +50,7 @@
     <Compile Include="States\IState.cs" />
     <Compile Include="States\Search\SearchState.cs" />
     <Compile Include="States\Trade\BasicTradeState.cs" />
+    <Compile Include="TradeParams.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Utils\Utils.csproj">
