@@ -22,7 +22,7 @@ namespace Utils.XmlProcessing
 
 		public FieldInfo GetFieldInfo(string name)
 		{
-			return fields[name];
+			return fields[name.ToLower()];
 		}
 
 		public object GetValue(string fieldName, T obj)
@@ -32,7 +32,7 @@ namespace Utils.XmlProcessing
 
 		public bool ContainsField(string name)
 		{
-			return fields.ContainsKey(name);
+			return fields.ContainsKey(name.ToLower());
 		}
 	}
 }

@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Reflection;
 using System.Xml.Linq;
 using StatesRobot;
+using Utils.XmlProcessing;
 
 namespace Tests.Tools
 {
@@ -25,13 +24,14 @@ namespace Tests.Tools
 		{
 			LoopAction = (tp, act) => act(tp);
 			Action<TradeParams> action;
+			var mapper = new XmlToFieldsMapper<TradeParams>();
 			foreach (var p in parameters.Descendants())
 			{
 				var sizeAttr = p.Attribute("Size");
-				/*var parseMethod = typeof (T).GetMethod("op_Addition", BindingFlags.Static | BindingFlags.Public);
-				if (sizeAttr != null)
+				/*var parseMethod = typeof (T).GetMethod("op_Addition", BindingFlags.Static | BindingFlags.Public); //"Parse"*/
+				/*if (sizeAttr != null)
 				{
-					action = LoopsGenerator<TradeParams>.AppendValue(action, p.Name.LocalName, )
+					action = LoopsGenerator<TradeParams>.AppendValue(action, p.Name.LocalName, mapper.GetFieldInfo())
 					decimal size = Decimal.Parse(sizeAttr.Value, new CultureInfo("en-us"));
 					Loops.Add(new Loop{Start = size, End = size, Step = Decimal.MaxValue, FieldName = p.Name.LocalName});
 				}

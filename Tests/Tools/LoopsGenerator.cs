@@ -46,7 +46,7 @@ namespace Tests.Tools
 		{
 			var xmlMapper = new XmlToFieldsMapper<TFieldsContainer>();	//TODO убрать static (или добавить static поле--)
 			if (!xmlMapper.ContainsField(fieldName))
-				throw new MissingFieldException("Can't loop field " + fieldName);
+				throw new MissingFieldException("Can't find loop field " + fieldName);
 
 			return tp =>
 			{

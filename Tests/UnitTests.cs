@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using StatesRobot;
@@ -106,6 +107,24 @@ namespace Tests
 			eb.AddCallback(typeof(StopLossMovingEvent), ev => { ++counter; });
 			eb.FireEvent(new StopLossMovingEvent(0, false));
 			Assert.That(counter == 3);
+		}
+
+		[TestMethod]
+		public void TestAppendValue()
+		{
+			TimeSpan endTime = new TimeSpan(10, 11, 12);
+			var action = LoopsGenerator<TradeParams>.AppendValue(tp => Assert.That(tp.EndTime == endTime), "EndTime", endTime);
+			action(new TradeParams());
+		}
+
+		[TestMethod]
+		public void TestAppendLoop()
+		{
+			var start = new TimeSpan(10, 11, 12);
+			var step = new TimeSpan(0, 10, 0);
+			var end = start + step.Add(step).Add(step);	//TODO убрать шаблонные циклы???
+			var action = LoopsGenerator<TradeParams>.AppendLoop(tp => Assert.That(tp.EndTime == start), new Loop<TimeSpan>("EndTime", start, end, step));
+			action(new TradeParams());
 		}
 	}
 }
