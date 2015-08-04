@@ -58,6 +58,7 @@
     <Compile Include="Tools\ConfigsReader.cs" />
     <Compile Include="Tools\Loop.cs" />
     <Compile Include="Tools\LoopsGenerator.cs" />
+    <Compile Include="Tools\TradesPrinter.cs" />
     <Compile Include="UnitTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -68,6 +69,10 @@
     <ProjectReference Include="..\StatesRobot\StatesRobot.csproj">
       <Project>{6729A7A8-4A00-4528-A91A-8511FA85E903}</Project>
       <Name>StatesRobot</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TradeTools\TradeTools.csproj">
+      <Project>{ECF0A961-873B-4DBC-9072-2B2B153AF265}</Project>
+      <Name>TradeTools</Name>
     </ProjectReference>
     <ProjectReference Include="..\Utils\Utils.csproj">
       <Project>{3FDCCC9C-056F-4ADD-AB19-88EC6A84F280}</Project>
@@ -102,7 +107,7 @@ xcopy /D /E $(SolutionDir)Resources\History\* $(TargetDir)History\</PreBuildEven
   </PropertyGroup>
   <PropertyGroup>
     <PostBuildEvent>
-</PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

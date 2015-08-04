@@ -42,23 +42,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EventBus.cs" />
-    <Compile Include="Events\StopLossMovingEvent.cs" />
-    <Compile Include="Events\DealEvent.cs" />
-    <Compile Include="Events\EndEvent.cs" />
+    <Compile Include="Events\EventBus.cs" />
     <Compile Include="Events\ITradeEvent.cs" />
-    <Compile Include="Events\SearchInfoEvent.cs" />
-    <Compile Include="Events\SecondExtremumEvent.cs" />
-    <Compile Include="Events\StopLossEvent.cs" />
+    <Compile Include="TableWriter\ITableWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Statistics.cs" />
-    <Compile Include="TablesWriter.cs" />
-    <Compile Include="Types\Candle.cs" />
-    <Compile Include="Types\Day.cs" />
-    <Compile Include="Types\Deal.cs" />
-    <Compile Include="Types\Extremum.cs" />
-    <Compile Include="Types\Tick.cs" />
-    <Compile Include="Types\TradesResult.cs" />
+    <Compile Include="TableWriter\ExcelWriter.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="XmlProcessing\FieldNameAttribute.cs" />
     <Compile Include="XmlProcessing\XmlToFieldsMapper.cs" />

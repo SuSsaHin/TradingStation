@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
 using StatesRobot;
-using Utils.Types;
 
 namespace Tests.Tools
 {

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Linq;
 using StatesRobot.States.End;
+using TradeTools;
+using TradeTools.Events;
 using Utils.Events;
-using Utils.Types;
 
 namespace StatesRobot.States.Trade
 {

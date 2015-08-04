@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ADLite;
-using Utils.Types;
+using TradeTools;
 
 namespace ADTrader
 {

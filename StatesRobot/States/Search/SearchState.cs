@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using StatesRobot.States.End;
+using TradeTools;
+using TradeTools.Events;
 using Utils;
 using Utils.Events;
-using Utils.Types;
 
-namespace StatesRobot.States.Search
+namespace StatesRobot.States.Search	//TODO документация!!
 {
 	class SearchState : IState
 	{
@@ -43,7 +44,6 @@ namespace StatesRobot.States.Search
 				searchTree.AddLast(new RootElement(currentIndex));
 				return result;
 			}
-
 			
 			var leftIter = searchTree.First;
 			while (leftIter != null)

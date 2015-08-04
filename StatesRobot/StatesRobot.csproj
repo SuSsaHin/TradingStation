@@ -53,6 +53,10 @@
     <Compile Include="TradeParams.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\TradeTools\TradeTools.csproj">
+      <Project>{ECF0A961-873B-4DBC-9072-2B2B153AF265}</Project>
+      <Name>TradeTools</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Utils\Utils.csproj">
       <Project>{3fdccc9c-056f-4add-ab19-88ec6a84f280}</Project>
       <Name>Utils</Name>

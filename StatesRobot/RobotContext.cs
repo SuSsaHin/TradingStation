@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using StatesRobot.States;
 using StatesRobot.States.Search;
+using TradeTools;
 using Utils.Events;
-using Utils.Types;
 
 namespace StatesRobot
 {

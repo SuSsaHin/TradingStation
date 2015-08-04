@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Utils.Types;
+using TradeTools;
 
 namespace StatesRobot
 {
@@ -20,7 +20,7 @@ namespace StatesRobot
 					return res;
 				}
 			}
-			catch (Exception ex)	
+			catch (Exception)	
 			{
 				//TODO Logs
 			}

@@ -1,4 +1,6 @@
-﻿namespace Utils.Events
+﻿using Utils.Events;
+
+namespace TradeTools.Events
 {
 	public class StopLossMovingEvent:ITradeEvent
 	{

@@ -25,6 +25,11 @@ namespace Utils.XmlProcessing
 			return fields[name];
 		}
 
+		public object GetValue(string fieldName, T obj)
+		{
+			return GetFieldInfo(fieldName).GetValue(obj);
+		}
+
 		public bool ContainsField(string name)
 		{
 			return fields.ContainsKey(name);

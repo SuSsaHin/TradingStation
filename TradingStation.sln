@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utils", "Utils\Utils.csproj", "{3FDCCC9C-056F-4ADD-AB19-88EC6A84F280}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatesRobot", "StatesRobot\StatesRobot.csproj", "{6729A7A8-4A00-4528-A91A-8511FA85E903}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{AB8E65A4-1314-4115-B9F5-A2684F2B48E6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeTools", "TradeTools\TradeTools.csproj", "{ECF0A961-873B-4DBC-9072-2B2B153AF265}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{AB8E65A4-1314-4115-B9F5-A2684F2B48E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB8E65A4-1314-4115-B9F5-A2684F2B48E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB8E65A4-1314-4115-B9F5-A2684F2B48E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECF0A961-873B-4DBC-9072-2B2B153AF265}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECF0A961-873B-4DBC-9072-2B2B153AF265}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECF0A961-873B-4DBC-9072-2B2B153AF265}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECF0A961-873B-4DBC-9072-2B2B153AF265}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

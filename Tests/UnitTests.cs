@@ -4,9 +4,10 @@ using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using StatesRobot;
 using Tests.Tools;
+using TradeTools;
+using TradeTools.Events;
 using Utils;
 using Utils.Events;
-using Utils.Types;
 using Assert = NUnit.Framework.Assert;
 
 namespace Tests
