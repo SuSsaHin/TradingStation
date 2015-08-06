@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Tests.Tools;
@@ -14,6 +13,16 @@ namespace Tests
 	[TestClass]
 	public class UnitTests
 	{
+		[TestMethod]
+		public void TestAddDeal()
+		{
+			var results = new TradesResult();
+			results.AddDeal(new Deal(100, new DateTime(1, 1, 1, 10, 0, 0), true));
+			results.AddDeal(new Deal(150, new DateTime(1, 1, 1, 15, 0, 0), false));
+			Assert.That(results.Profit == 50 - TradesResult.Comission);
+			Assert.That(results.DealsAreClosed);
+		}
+
 		[TestMethod]
 		public void TestConfigurator()
 		{

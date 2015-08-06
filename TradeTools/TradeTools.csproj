@@ -51,7 +51,6 @@
     <Compile Include="Extremum.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tick.cs" />
-    <Compile Include="TradesResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Utils\Utils.csproj">

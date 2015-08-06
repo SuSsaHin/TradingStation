@@ -7,10 +7,11 @@ using Utils;
 
 namespace Tests.Tools
 {
-	public class TradesResult //TODO вынести в тестер
+	public class TradesResult 	//TODO FieldNames
 	{
-		private readonly List<Deal> deals = new List<Deal>();	//TODO FieldNames
-
+		private readonly List<Trade> trades = new List<Trade>();
+		private readonly Stack<Deal> deals = new Stack<Deal>(); 
+		
 		private const int startDepoSize = 30000;	//TODO config
 
 		private int globalMaximumIndex;
@@ -18,34 +19,36 @@ namespace Tests.Tools
 		private int depoSize = startDepoSize;
 		private int maxDepoSize = startDepoSize;
 
+		public const int Comission = 30;
+
 		public double MaxDropdown { get; private set; }
 		public int MaxDropdownLength { get; private set; }
 		public int Profit 
 		{
-			get { return deals.Sum(d => d.Profit); } 
+			get { return trades.Sum(d => d.Profit); } 
 		}
-		public int DealsCount { get { return deals.Count; } }
+		public int DealsCount { get { return trades.Count; } }
 
 		public int GoodCount 
 		{
-			get { return deals.Count(d => d.IsGood); } 
+			get { return trades.Count(d => d.IsGood); } 
 		}
 
 		public int BadCount
 		{
-			get { return deals.Count(d => !d.IsGood); }
+			get { return trades.Count(d => !d.IsGood); }
 		}
 
 		public int Volume
 		{
-			get { return deals.Sum(deal => Math.Abs(deal.Profit)); }
+			get { return trades.Sum(deal => Math.Abs(deal.Profit)); }
 		}
 
 		public int MaxLoss
 		{
 			get
 			{
-				var badDeals = deals.Where(d => !d.IsGood).ToList();
+				var badDeals = trades.Where(d => !d.IsGood).ToList();
 				return badDeals.Any() ? Math.Abs(badDeals.Min(d => d.Profit)) : 0;
 			}
 		}
@@ -54,7 +57,7 @@ namespace Tests.Tools
 		{
 			get
 			{
-				var goodDeals = deals.Where(d => d.IsGood).ToList();
+				var goodDeals = trades.Where(d => d.IsGood).ToList();
 				return goodDeals.Any() ? goodDeals.Max(d => d.Profit) : 0;
 			}
 		}
@@ -63,7 +66,7 @@ namespace Tests.Tools
 		{
 			get
 			{
-				var goodDeals = deals.Where(d => d.IsGood).ToList();
+				var goodDeals = trades.Where(d => d.IsGood).ToList();
 				return goodDeals.Any() ? goodDeals.Average(d => d.Profit) : 0;
 			}
 		}
@@ -72,20 +75,22 @@ namespace Tests.Tools
 		{
 			get
 			{
-				var badDeals = deals.Where(d => !d.IsGood).ToList();
+				var badDeals = trades.Where(d => !d.IsGood).ToList();
 				return badDeals.Any() ? badDeals.Average(d => d.Profit) : 0;
 			}
 		}
 
 		public int LongGoodCount
 		{
-			get { return deals.Count(d => d.IsGood && d.IsTrendLong); }
+			get { return trades.Count(d => d.IsGood && d.IsTrendLong); }
 		}
 
 		public int ShortGoodCount
 		{
-			get { return deals.Count(d => d.IsGood && !d.IsTrendLong); }
+			get { return trades.Count(d => d.IsGood && !d.IsTrendLong); }
 		}
+
+		public bool DealsAreClosed { get { return !deals.Any(); } }
 
 		public static List<string> GetHeaders() //TODO FieldNames
 	    {
@@ -113,44 +118,57 @@ namespace Tests.Tools
 								ProfitAverage.ToEnString(2), LossAverage.ToEnString(2), LongGoodCount, ShortGoodCount);
 		}
 
-		public void AddDeal(Deal deal)
+		private void AddTrade(Trade trade)
 		{
-			deals.Add(deal);
+			trades.Add(trade);
 
-			depoSize += deal.Profit;
+			depoSize += trade.Profit;
 			if (depoSize >= maxDepoSize)
 			{
 				maxDepoSize = depoSize;
-				globalMaximumIndex = deals.Count - 1;
+				globalMaximumIndex = trades.Count - 1;
 			}
 			else
 			{
 				double currentDropdown = 100 * (maxDepoSize - depoSize) / (double)(maxDepoSize);
-				int currentDropdownLength = deals.Count - 1 - globalMaximumIndex;
+				int currentDropdownLength = trades.Count - 1 - globalMaximumIndex;
 				MaxDropdown = Math.Max(currentDropdown, MaxDropdown);
 				MaxDropdownLength = Math.Max(currentDropdownLength, MaxDropdownLength);
 			}
 		}
 
+		public void AddDeal(Deal deal)
+		{
+			if (!deals.Any() || deals.Peek().IsBuy == deal.IsBuy)
+			{
+				deals.Push(deal);
+				return;
+			}
+
+			var prevDeal = deals.Pop();
+			var profit = (deal.Price - prevDeal.Price)*(prevDeal.IsBuy ? 1 : -1) - Comission;
+			AddTrade(new Trade(profit, prevDeal.IsBuy, deal.DateTime - prevDeal.DateTime));
+		}
+
 	#region Unused
 		public void PrintDeals()
 		{
-			for (int i = 0; i < deals.Count; ++i)
+			for (int i = 0; i < trades.Count; ++i)
 			{
-				Console.WriteLine("{0}: {1}", i, deals[i].Profit);
+				Console.WriteLine("{0}: {1}", i, trades[i].Profit);
 			}
 		}
 
 		public void PrintDeals(string filename)
 		{
-			File.WriteAllLines(filename, deals.ConvertAll(d => d.Profit.ToString()));
+			File.WriteAllLines(filename, trades.ConvertAll(d => d.Profit.ToString()));
 		}
 
 		public void PrintDepo(string filename)
 		{
 			var depo = new List<int>{0};
 			int sum = 0;
-			foreach (var deal in deals)
+			foreach (var deal in trades)
 			{
 				sum += deal.Profit;
 				depo.Add(sum);

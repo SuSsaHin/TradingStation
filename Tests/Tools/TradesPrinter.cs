@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using StatesRobot;
-using TradeTools;
 using Utils.TableWriter;
 using Utils.XmlProcessing;
 
@@ -13,7 +12,7 @@ namespace Tests.Tools
 		private readonly ITableWriter writer;
 		private readonly List<string> paramsFieldNames;
 		private readonly List<string> resultsFieldNames;
-		private readonly XmlToFieldsMapper<TradeParams> paramsXmlMapper;
+		private readonly XmlToFieldsMapper<TradeParams> paramsXmlMapper;	//TODO !!static
 		private readonly XmlToFieldsMapper<TradesResult> resultsXmlMapper;
 
 		private readonly List<string> headers;
@@ -26,7 +25,7 @@ namespace Tests.Tools
 			this.resultsFieldNames = resultsFieldNames as List<string> ?? resultsFieldNames.ToList();
 
 			table = new List<List<string>>();
-			paramsXmlMapper = new XmlToFieldsMapper<TradeParams>(); //TODO см. static field
+			paramsXmlMapper = new XmlToFieldsMapper<TradeParams>();
 			
 			string badName;
 			if ((badName = this.paramsFieldNames.Find(name => !paramsXmlMapper.ContainsField(name))) != null)

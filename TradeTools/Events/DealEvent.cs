@@ -11,6 +11,14 @@ namespace TradeTools.Events
 		public IReadOnlyList<Extremum> FirstLongExtremums { get; private set; }
 		public IReadOnlyList<Extremum> FirstShortExtremums { get; private set; }
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="isTrendLong"></param>
+		/// <param name="price"></param>
+		/// <param name="secondExtremum">DEBUG</param>
+		/// <param name="firstLongExtremums">DEBUG</param>
+		/// <param name="firstShortExtremums">DEBUG</param>
 		public DealEvent(bool isTrendLong, int price, Extremum secondExtremum = null, IReadOnlyList<Extremum> firstLongExtremums = null, IReadOnlyList<Extremum> firstShortExtremums = null)
 		{
 			FirstShortExtremums = firstShortExtremums;
