@@ -25,6 +25,9 @@ namespace Utils.Events
 
 		public void FireEvent(ITradeEvent fired)
 		{
+			if (fired == null)
+				throw new ArgumentNullException("fired");
+
 			var key = fired.GetType();
 
 			if (!delegates.ContainsKey(key))

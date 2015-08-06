@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using TradeTools;
 using Utils;
 
-namespace TradeTools
+namespace Tests.Tools
 {
 	public class TradesResult //TODO вынести в тестер
 	{

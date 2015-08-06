@@ -10,6 +10,7 @@ namespace Tests.Tools
 		private LoopsGenerator<TradeParams> loopsExecutor; 
 		public StatesFactory Factory { get; private set; }
 		public IExecutor<TradeParams> Executor { get { return loopsExecutor; } }
+		public HistoryRepository Repository { get; private set; }
 
 		public Configurator(string configsName)
 		{
@@ -17,6 +18,13 @@ namespace Tests.Tools
 			var test = document.Descendants("Test").Single();
 			InitFactory(test.Descendants("Types").Single());
 			InitLoops(test.Descendants("Params").Single());
+			InitRepository(test.Descendants("Tool").Single());
+		}
+
+		private void InitRepository(XElement tool)
+		{
+			var isTicks = tool.Attribute("IsTicks");
+			Repository = new HistoryRepository(tool.Value, isTicks != null && (bool)isTicks);
 		}
 
 		private void InitLoops(XElement parameters)

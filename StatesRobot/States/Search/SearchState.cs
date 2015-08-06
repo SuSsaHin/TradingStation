@@ -6,7 +6,7 @@ using TradeTools.Events;
 using Utils;
 using Utils.Events;
 
-namespace StatesRobot.States.Search	//TODO документация!!
+namespace StatesRobot.States.Search	//TODO !!документация
 {
 	class SearchState : IState
 	{

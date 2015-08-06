@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Tests.Tools;
@@ -14,21 +15,10 @@ namespace Tests
 	public class UnitTests
 	{
 		[TestMethod]
-		public void TestRefs()
-		{
-			var c = new Candle(new DateTime(), 100, 120, 20, 100, 5);
-			var d = c;
-			c = new Candle(new DateTime(), 120, 120, 20, 120, 5);
-			Console.WriteLine(c);
-			Console.WriteLine(d);
-		}
-
-		[TestMethod]
 		public void TestConfigurator()
 		{
 			var cr = new Configurator("Configs/TestConfig.xml");
-			var executor = cr.Executor;
-			executor.Execute(tp => Console.WriteLine("{0}, {1}, {2}", tp.PegtopSize, tp.TrailingStopPercent, tp.StopLoss));
+			cr.Executor.Execute(tp => Console.WriteLine("{0}, {1}, {2}", tp.PegtopSize, tp.TrailingStopPercent, tp.StopLoss));
 		}
 
 		[TestMethod]

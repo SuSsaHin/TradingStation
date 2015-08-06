@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TradeTools
+namespace Tests.Tools
 {
 	public class Deal
 	{

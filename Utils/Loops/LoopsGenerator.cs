@@ -6,10 +6,10 @@ namespace Utils.Loops
 	public class LoopsGenerator<TFieldsContainer> : IExecutor<TFieldsContainer> where TFieldsContainer : new()
 	{
 		private Func<Action<TFieldsContainer>, Action<TFieldsContainer>> loop = action => action;
+		private readonly XmlToFieldsMapper<TFieldsContainer> xmlMapper = new XmlToFieldsMapper<TFieldsContainer>();	//TODO static?
 
 		public void AppendLoop(string fieldName, object loopStart, object loopEnd, object loopStep)
 		{
-			var xmlMapper = new XmlToFieldsMapper<TFieldsContainer>();
 			var name = fieldName.ToLower();
 			if (!xmlMapper.ContainsField(name))
 				throw new MissingFieldException("Can't loop field " + fieldName);
@@ -37,7 +37,6 @@ namespace Utils.Loops
 
 		public void AppendValue(string fieldName, object value)
 		{
-			var xmlMapper = new XmlToFieldsMapper<TFieldsContainer>();	//TODO убрать static (или добавить static поле--)
 			if (!xmlMapper.ContainsField(fieldName))
 				throw new MissingFieldException("Can't find loop field " + fieldName);
 

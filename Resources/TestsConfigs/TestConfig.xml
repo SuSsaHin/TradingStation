@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Tests>
-	<Test tool="RTS-15">
+	<Test>
+		<Tool>RTS-15</Tool>
 		<Types>
 			<Stop>trailing</Stop>
 		</Types>

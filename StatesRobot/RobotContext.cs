@@ -23,9 +23,9 @@ namespace StatesRobot
 
 		internal IState CurrentState { get; set; }
 
-		public RobotContext(TradeParams tradeParams, StatesFactory factory, TradeAdvisor advisor, List<Candle> history)
+		public RobotContext(TradeParams tradeParams, StatesFactory factory, TradeAdvisor advisor, List<Candle> history = null)
 		{
-			Candles = history;
+			Candles = history ?? new List<Candle>();
 			Advisor = advisor;
 			Factory = factory;
 
@@ -41,8 +41,8 @@ namespace StatesRobot
 
 		public ITradeEvent Process(Candle candle)
 		{
+			Advisor.AddCandle(candle);
 			var result = CurrentState.Process(this, candle);
-			Advisor.AddCandle(candle);	//TODO specify order
 			Candles.Add(candle);
 			return result;
 		}

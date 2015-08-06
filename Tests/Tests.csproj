@@ -57,7 +57,10 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Tools\Configurator.cs" />
+    <Compile Include="Tools\HistoryReader.cs" />
+    <Compile Include="Tools\HistoryRepository.cs" />
     <Compile Include="Tools\TradesPrinter.cs" />
+    <Compile Include="StrategyTests.cs" />
     <Compile Include="UnitTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
