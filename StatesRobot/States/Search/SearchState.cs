@@ -29,7 +29,7 @@ namespace StatesRobot.States.Search	//TODO !!документация
 
 		public SearchState(RobotContext context)
 		{
-			searchTree = new LinkedList<RootElement>();
+			searchTree = new LinkedList<RootElement>();	//TODO заполнить по history!
 			firstLongExtremums = new List<Extremum>();
 			firstShortExtremums = new List<Extremum>();
 		}
@@ -103,7 +103,7 @@ namespace StatesRobot.States.Search	//TODO !!документация
 				return null;
 
 			if (NeedToTrade(context, extremum))
-				return new DealEvent(extremum.IsMinimum, processedCandle.Close, extremum);
+				return new DealEvent(new Deal(processedCandle.Close, processedCandle.DateTime, extremum.IsMinimum), extremum);
 
 			return new SecondExtremumEvent(extremum, firstLongExtremums, firstShortExtremums);
 		}
@@ -167,7 +167,7 @@ namespace StatesRobot.States.Search	//TODO !!документация
 			return mid.Low < left.Low && mid.Low < left.Low && mid.High <= left.High && mid.High <= right.High;
 		}
 		
-		private bool IsTrendLong(List<Candle> candles)
+		private bool IsTrendLong(IReadOnlyList<Candle> candles)
 		{
 			return candles[candles.Count - 1].Close > candles.First().Open;
 		}

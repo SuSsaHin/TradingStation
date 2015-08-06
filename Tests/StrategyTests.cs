@@ -3,27 +3,28 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using StatesRobot;
 using Tests.Tools;
-using Utils.Events;
+using TradeTools.Events;
 
 namespace Tests
 {
 	[TestClass]
 	public class StrategyTests
 	{
-		private void RunTest(TradeParams tradeParams, StatesFactory statesFactory, TradeAdvisor advisor, 
-								HistoryRepository repository, EventBus evetBus)
+		private void RunTest(TradeParams tradeParams, StatesFactory statesFactory, TradeAdvisor advisor, HistoryRepository repository)
 		{
 			var robot = new RobotContext(tradeParams, statesFactory, advisor);
+			var results = new TradesResult();
 			foreach (var day in repository.Days.Skip(1))
 			{
 				foreach (var candle in day.FiveMins)
 				{
-					var ev = robot.Process(candle);
-					if (ev != null)
+					var dealEvent = robot.Process(candle) as DealEvent;
+					if (dealEvent != null)
 					{
-						evetBus.FireEvent(ev);
+						results.AddDeal(dealEvent.Deal);
 					}
 				}
+				robot.ClearHistory();
 			}
 		}
 		[TestCase("Configs/main.xml")]
@@ -33,7 +34,7 @@ namespace Tests
 			var repository = configurator.Repository;
 			var advisor = new TradeAdvisor(repository.Days.First().FiveMins);
 
-
+			configurator.Executor.Execute(tp => RunTest(tp, configurator.Factory, advisor, repository));
 		}
 	}
 }

@@ -10,6 +10,7 @@ namespace StatesRobot
 	public class RobotContext
 	{
 		private readonly CandlesFormer candlesFormer = new CandlesFormer();
+		private readonly List<Candle> candles;
 		internal StatesFactory Factory { get; private set; }
 		internal TradeAdvisor Advisor { get; private set; }
 		internal int StopLoss { get; set; }
@@ -17,15 +18,19 @@ namespace StatesRobot
 		internal int BreakevenSize { get; private set; }
 		internal int PegtopSize { get; private set; }
 		internal TimeSpan EndTime { get; private set; }
-		
-		internal List<Candle> Candles { get; private set; }
+
+		internal IReadOnlyList<Candle> Candles
+		{
+			get { return candles; }
+		}
+
 		internal int MaxSkippedCandlesCount { get; private set; }
 
 		internal IState CurrentState { get; set; }
 
 		public RobotContext(TradeParams tradeParams, StatesFactory factory, TradeAdvisor advisor, List<Candle> history = null)
 		{
-			Candles = history ?? new List<Candle>();
+			candles = history ?? new List<Candle>();
 			Advisor = advisor;
 			Factory = factory;
 
@@ -43,7 +48,7 @@ namespace StatesRobot
 		{
 			Advisor.AddCandle(candle);
 			var result = CurrentState.Process(this, candle);
-			Candles.Add(candle);
+			candles.Add(candle);
 			return result;
 		}
 
@@ -55,6 +60,11 @@ namespace StatesRobot
 		public ITradeEvent StopTrading()
 		{
 			return CurrentState.StopTrading(this);
+		}
+
+		public void ClearHistory()
+		{
+			candles.Clear();
 		}
 	}
 }

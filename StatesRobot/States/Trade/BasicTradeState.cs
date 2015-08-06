@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using StatesRobot.States.End;
 using TradeTools;
 using TradeTools.Events;
@@ -23,7 +22,7 @@ namespace StatesRobot.States.Trade
 			if (candle.Time >= context.EndTime)
 			{
 				context.CurrentState = new EndState();
-				return new DealEvent(!IsTrendLong, candle.Close);
+				return new DealEvent(new Deal(candle.Close, candle.DateTime, !IsTrendLong));
 			}
 
 			int endPrice;
@@ -40,7 +39,8 @@ namespace StatesRobot.States.Trade
 		public virtual ITradeEvent StopTrading(RobotContext context)
 		{
 			context.CurrentState = new EndState();
-			return new DealEvent(!IsTrendLong, context.Candles.Last().Close);
+			var lastCandle = context.Candles.Last();
+			return new DealEvent(new Deal(lastCandle.Close, lastCandle.DateTime, !IsTrendLong));
 		}
 	}
 }
