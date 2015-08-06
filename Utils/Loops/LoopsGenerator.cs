@@ -1,12 +1,13 @@
 ﻿using System;
-using Utils;
 using Utils.XmlProcessing;
 
-namespace Tests.Tools
+namespace Utils.Loops
 {
-	static class LoopsGenerator<TFieldsContainer>
+	public class LoopsGenerator<TFieldsContainer> : IExecutor<TFieldsContainer> where TFieldsContainer : new()
 	{
-		public static Func<Action<TFieldsContainer>, Action<TFieldsContainer>> AppendLoop(Func<Action<TFieldsContainer>, Action<TFieldsContainer>> func, string fieldName, object loopStart, object loopEnd, object loopStep)
+		private Func<Action<TFieldsContainer>, Action<TFieldsContainer>> loop = action => action;
+
+		public void AppendLoop(string fieldName, object loopStart, object loopEnd, object loopStep)
 		{
 			var xmlMapper = new XmlToFieldsMapper<TFieldsContainer>();
 			var name = fieldName.ToLower();
@@ -18,35 +19,44 @@ namespace Tests.Tools
 			var start = fieldInfo.FieldType.DynamicCast(loopStart);
 			var step = fieldInfo.FieldType.DynamicCast(loopStep);
 			var end = fieldInfo.FieldType.DynamicCast(loopEnd);
+
+			var oldLoop = loop;
 			
-			return action =>
+			loop = action =>
 			{
 				return tp =>
 				{
 					for (var i = start; i < end; i += step)
 					{
 						fieldInfo.SetValue(tp, i);
-						func(action)(tp);
+						oldLoop(action)(tp);
 					}
 				};
 			};
 		}
 
-		public static Func<Action<TFieldsContainer>, Action<TFieldsContainer>> AppendValue(Func<Action<TFieldsContainer>, Action<TFieldsContainer>> func, string fieldName, object value)
+		public void AppendValue(string fieldName, object value)
 		{
 			var xmlMapper = new XmlToFieldsMapper<TFieldsContainer>();	//TODO убрать static (или добавить static поле--)
 			if (!xmlMapper.ContainsField(fieldName))
 				throw new MissingFieldException("Can't find loop field " + fieldName);
 
+			var oldLoop = loop;
+
 			var fieldInfo = xmlMapper.GetFieldInfo(fieldName);
-			return action =>
+			loop = action =>
 			{
 				return tp =>
 				{
 					fieldInfo.SetValue(tp, fieldInfo.FieldType.DynamicCast(value));
-					func(action)(tp);
+					oldLoop(action)(tp);
 				};
 			};
+		}
+
+		public void Execute(Action<TFieldsContainer> action)
+		{
+			loop(action)(new TFieldsContainer());
 		}
 	}
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using StatesRobot;
 using Tests.Tools;
 using TradeTools;
 using TradeTools.Events;
@@ -28,7 +27,8 @@ namespace Tests
 		public void TestConfigurator()
 		{
 			var cr = new Configurator("Configs/TestConfig.xml");
-			cr.Loop(tp => Console.WriteLine("{0}, {1}, {2}", tp.PegtopSize, tp.TrailingStopPercent, tp.StopLoss))(new TradeParams());
+			var executor = cr.Executor;
+			executor.Execute(tp => Console.WriteLine("{0}, {1}, {2}", tp.PegtopSize, tp.TrailingStopPercent, tp.StopLoss));
 		}
 
 		[TestMethod]

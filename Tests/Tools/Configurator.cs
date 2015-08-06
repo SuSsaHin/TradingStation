@@ -1,14 +1,15 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Xml.Linq;
 using StatesRobot;
+using Utils.Loops;
 
 namespace Tests.Tools
 {
 	class Configurator
 	{
+		private LoopsGenerator<TradeParams> loopsExecutor; 
 		public StatesFactory Factory { get; private set; }
-		public Func<Action<TradeParams>, Action<TradeParams>> Loop { get; private set; }
+		public IExecutor<TradeParams> Executor { get { return loopsExecutor; } }
 
 		public Configurator(string configsName)
 		{
@@ -20,20 +21,19 @@ namespace Tests.Tools
 
 		private void InitLoops(XElement parameters)
 		{
-			Loop = action => action;
+			loopsExecutor = new LoopsGenerator<TradeParams>();
 			foreach (var p in parameters.Descendants())
 			{
 				var sizeAttr = p.Attribute("Size");
-				var localP = p;
-				/*var parseMethod = typeof (T).GetMethod("op_Addition", BindingFlags.Static | BindingFlags.Public); //"Parse"*/
+
 				if (sizeAttr != null)
 				{
-					Loop = LoopsGenerator<TradeParams>.AppendValue(Loop, localP.Name.LocalName, sizeAttr);
+					loopsExecutor.AppendValue(p.Name.LocalName, sizeAttr);
 				}
 				else
 				{
-					Loop = LoopsGenerator<TradeParams>.AppendLoop(Loop, localP.Name.LocalName, localP.Attribute("Start"),
-						localP.Attribute("End"), localP.Attribute("Step"));
+					loopsExecutor.AppendLoop(p.Name.LocalName, p.Attribute("Start"),
+						p.Attribute("End"), p.Attribute("Step"));
 				}
 			}
 		}
