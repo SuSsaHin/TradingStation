@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
 using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using StatesRobot;
@@ -25,75 +23,12 @@ namespace Tests
 			Console.WriteLine(c);
 			Console.WriteLine(d);
 		}
-		/*
-		[TestMethod]
-		public void TestLoopsGenerator()
-		{
-			var lg = new LoopsGenerator();
-			var loops = new List<Loop>
-			{
-				new Loop {Start = 0, End = 10, Step = 2, FieldName = "StopLoss"},
-				new Loop {Start = 5, End = 15, Step = 1, FieldName = "TrailingStopPercent"}
-			};
-
-			var result = new List<List<decimal>> { new List<decimal>(), new List<decimal>() };
-			lg.RunLoops(loops, tp =>
-			{
-				result[0].Add(tp.StopLoss);
-				result[1].Add(tp.TrailingStopPercent);
-			});
-
-			int resInd = 0;
-			for (decimal sl = loops[0].Start; sl <= loops[0].End; sl += loops[0].Step)
-			{
-				for (decimal dsl = loops[1].Start; dsl <= loops[1].End; dsl += loops[1].Step)
-				{
-					Assert.That(result[0][resInd] == sl && result[1][resInd] == dsl);
-					resInd++;
-				}
-			}
-		}*/
 
 		[TestMethod]
-		public void TestLoopsGeneratorBadNames()
+		public void TestConfigurator()
 		{
-			/*var lg = new LoopsGenerator();
-			var loops = new List<Loop>
-			{
-				new Loop {Start = 0, End = 10, Step = 2, FieldName = "Stop S Loss"},
-			};
-			Assert.Throws<MissingFieldException>(() => lg.GenerateLoops(loops, x => { }));
-
-			loops = new List<Loop>
-			{
-				new Loop {Start = 0, End = 10, Step = 2, FieldName = "stoploss"},
-			};
-			Assert.DoesNotThrow(() => lg.GenerateLoops(loops, x => { }));*/
-		}
-
-		[TestMethod]
-		public void TestConfigsReader()
-		{
-			/*var cr = new ConfigsReader("Configs/TestConfig.xml");
-			Assert.That(cr.Factory.TradeStateType == StatesFactory.TradeStateTypes.Trailing);
-			Assert.That(cr.Loops[0].FieldName == "StopLoss");
-			Assert.That(cr.Loops[0].Start == 200);
-			Assert.That(cr.Loops[0].End == 1000);
-			Assert.That(cr.Loops[0].Step == 200);
-
-			Assert.That(cr.Loops[2].FieldName == "Pegtop");
-			Assert.That(cr.Loops[2].Start == 70);
-			Assert.That(cr.Loops[2].End == 70);
-			Assert.That(cr.Loops[2].Step == decimal.MaxValue);*/
-		}
-
-		[TestMethod]
-		public void TestTimeParse()
-		{
-			var type = typeof (StatesFactory);
-			var method = type.GetMethod("Parse", new Type[] {typeof (string), typeof (IFormatProvider)});
-			var res = Convert.ChangeType("23:30", typeof (TimeSpan));
-			res.GetType();
+			var cr = new Configurator("Configs/TestConfig.xml");
+			cr.Loop(tp => Console.WriteLine("{0}, {1}, {2}", tp.PegtopSize, tp.TrailingStopPercent, tp.StopLoss))(new TradeParams());
 		}
 
 		[TestMethod]
@@ -110,21 +45,11 @@ namespace Tests
 		}
 
 		[TestMethod]
-		public void TestAppendValue()
+		public void TestDynamicCastXelements()
 		{
-			TimeSpan endTime = new TimeSpan(10, 11, 12);
-			var action = LoopsGenerator<TradeParams>.AppendValue(tp => Assert.That(tp.EndTime == endTime), "EndTime", endTime);
-			action(new TradeParams());
-		}
-
-		[TestMethod]
-		public void TestAppendLoop()
-		{
-			var start = new TimeSpan(10, 11, 12);
-			var step = new TimeSpan(0, 10, 0);
-			var end = start + step.Add(step).Add(step);	//TODO убрать шаблонные циклы???
-			var action = LoopsGenerator<TradeParams>.AppendLoop(tp => Assert.That(tp.EndTime == start), new Loop<TimeSpan>("EndTime", start, end, step));
-			action(new TradeParams());
+			var test = new TimeSpan(0, 10, 0);
+			var testEl = new XElement("N1", test);
+			Assert.That(typeof(TimeSpan).DynamicCast(testEl) == test);
 		}
 	}
 }

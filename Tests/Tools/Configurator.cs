@@ -1,18 +1,16 @@
 ﻿using System;
-using System.Globalization;
 using System.Linq;
 using System.Xml.Linq;
 using StatesRobot;
-using Utils.XmlProcessing;
 
 namespace Tests.Tools
 {
-	class ConfigsReader
+	class Configurator
 	{
 		public StatesFactory Factory { get; private set; }
-		public Action<TradeParams, Action<TradeParams>> LoopAction { get; private set; } 
+		public Func<Action<TradeParams>, Action<TradeParams>> Loop { get; private set; }
 
-		public ConfigsReader(string configsName)
+		public Configurator(string configsName)
 		{
 			var document = XDocument.Load(configsName);
 			var test = document.Descendants("Test").Single();
@@ -22,29 +20,21 @@ namespace Tests.Tools
 
 		private void InitLoops(XElement parameters)
 		{
-			LoopAction = (tp, act) => act(tp);
-			Action<TradeParams> action;
-			var mapper = new XmlToFieldsMapper<TradeParams>();
+			Loop = action => action;
 			foreach (var p in parameters.Descendants())
 			{
 				var sizeAttr = p.Attribute("Size");
+				var localP = p;
 				/*var parseMethod = typeof (T).GetMethod("op_Addition", BindingFlags.Static | BindingFlags.Public); //"Parse"*/
-				/*if (sizeAttr != null)
+				if (sizeAttr != null)
 				{
-					action = LoopsGenerator<TradeParams>.AppendValue(action, p.Name.LocalName, mapper.GetFieldInfo())
-					decimal size = Decimal.Parse(sizeAttr.Value, new CultureInfo("en-us"));
-					Loops.Add(new Loop{Start = size, End = size, Step = Decimal.MaxValue, FieldName = p.Name.LocalName});
+					Loop = LoopsGenerator<TradeParams>.AppendValue(Loop, localP.Name.LocalName, sizeAttr);
 				}
 				else
 				{
-					Loops.Add(new Loop
-					{
-						Start = Decimal.Parse(p.Attribute("Start").Value, new CultureInfo("en-us")),
-						End = Decimal.Parse(p.Attribute("End").Value, new CultureInfo("en-us")),
-						Step = Decimal.Parse(p.Attribute("Step").Value, new CultureInfo("en-us")),
-						FieldName = p.Name.LocalName
-					});
-				}*/
+					Loop = LoopsGenerator<TradeParams>.AppendLoop(Loop, localP.Name.LocalName, localP.Attribute("Start"),
+						localP.Attribute("End"), localP.Attribute("Step"));
+				}
 			}
 		}
 

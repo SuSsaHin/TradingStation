@@ -13,6 +13,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeTools", "TradeTools\TradeTools.csproj", "{ECF0A961-873B-4DBC-9072-2B2B153AF265}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{42B9B396-48A2-47AF-96E8-3DC07468CFD8}"
+	ProjectSection(SolutionItems) = preProject
+		Resources\TestsConfigs\TestConfig.xml = Resources\TestsConfigs\TestConfig.xml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

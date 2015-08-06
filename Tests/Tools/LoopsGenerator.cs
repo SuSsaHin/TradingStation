@@ -1,57 +1,51 @@
 ﻿using System;
-using System.Reflection;
+using Utils;
 using Utils.XmlProcessing;
 
 namespace Tests.Tools
 {
 	static class LoopsGenerator<TFieldsContainer>
 	{
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <typeparam name="T">T should be a type of field</typeparam>
-		/// <param name="func"></param>
-		/// <param name="loop"></param>
-		/// <returns></returns>
-		public static Action<TFieldsContainer> AppendLoop<T>(Action<TFieldsContainer> func, Loop<T> loop) where T : IComparable
+		public static Func<Action<TFieldsContainer>, Action<TFieldsContainer>> AppendLoop(Func<Action<TFieldsContainer>, Action<TFieldsContainer>> func, string fieldName, object loopStart, object loopEnd, object loopStep)
 		{
 			var xmlMapper = new XmlToFieldsMapper<TFieldsContainer>();
-			var name = loop.FieldName.ToLower();
+			var name = fieldName.ToLower();
 			if (!xmlMapper.ContainsField(name))
-				throw new MissingFieldException("Can't loop field " + loop.FieldName);
+				throw new MissingFieldException("Can't loop field " + fieldName);
 
-			var addOp = typeof (T).GetMethod("op_Addition", BindingFlags.Static | BindingFlags.Public);
-			if (addOp == null)
-				throw new ArithmeticException("Type " + typeof(T).Name + " doesn't contains + operator");
+			var fieldInfo = xmlMapper.GetFieldInfo(name);
 
-			return tp =>
+			var start = fieldInfo.FieldType.DynamicCast(loopStart);
+			var step = fieldInfo.FieldType.DynamicCast(loopStep);
+			var end = fieldInfo.FieldType.DynamicCast(loopEnd);
+			
+			return action =>
 			{
-				for (T i = loop.Start; i.CompareTo(loop.End) < 0; addOp.Invoke(null, new object[]{i, loop.Step}))
+				return tp =>
 				{
-					xmlMapper.GetFieldInfo(name).SetValue(tp, i);
-					func(tp);
-				}
+					for (var i = start; i < end; i += step)
+					{
+						fieldInfo.SetValue(tp, i);
+						func(action)(tp);
+					}
+				};
 			};
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <typeparam name="T">T should be a type of field</typeparam>
-		/// <param name="func"></param>
-		/// <param name="fieldName"></param>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		public static Action<TFieldsContainer> AppendValue<T>(Action<TFieldsContainer> func, string fieldName, T value)
+		public static Func<Action<TFieldsContainer>, Action<TFieldsContainer>> AppendValue(Func<Action<TFieldsContainer>, Action<TFieldsContainer>> func, string fieldName, object value)
 		{
 			var xmlMapper = new XmlToFieldsMapper<TFieldsContainer>();	//TODO убрать static (или добавить static поле--)
 			if (!xmlMapper.ContainsField(fieldName))
 				throw new MissingFieldException("Can't find loop field " + fieldName);
 
-			return tp =>
+			var fieldInfo = xmlMapper.GetFieldInfo(fieldName);
+			return action =>
 			{
-				xmlMapper.GetFieldInfo(fieldName).SetValue(tp, value);
-				func(tp);
+				return tp =>
+				{
+					fieldInfo.SetValue(tp, fieldInfo.FieldType.DynamicCast(value));
+					func(action)(tp);
+				};
 			};
 		}
 	}
