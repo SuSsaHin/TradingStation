@@ -2,6 +2,8 @@
 using System.Xml.Linq;
 using StatesRobot;
 using Utils.Loops;
+using Utils.TableWriter;
+using Utils.XmlProcessing;
 
 namespace Tests.Tools
 {
@@ -11,14 +13,25 @@ namespace Tests.Tools
 		public StatesFactory Factory { get; private set; }
 		public IExecutor<TradeParams> Executor { get { return loopsExecutor; } }
 		public HistoryRepository Repository { get; private set; }
+		public TradesPrinter Printer { get; private set; }
 
 		public Configurator(string configsName)
 		{
 			var document = XDocument.Load(configsName);
-			var test = document.Descendants("Test").Single();
-			InitFactory(test.Descendants("Types").Single());
-			InitLoops(test.Descendants("Params").Single());
-			InitRepository(test.Descendants("Tool").Single());
+			var testNode = document.Descendants("Test").Single();
+			var paramsNode = testNode.Descendants("Params").Single();
+
+			InitFactory(testNode.Descendants("Types").Single());
+			InitLoops(paramsNode);
+			InitRepository(testNode.Descendants("Tool").Single());
+			InitPrinter(paramsNode);
+		}
+
+		private void InitPrinter(XElement parmeters)
+		{
+			var paramsFieldNames = parmeters.Descendants().Select(el => el.Name.LocalName).ToList();
+			var resultsFieldNames = (new XmlToFieldsMapper<TradesResult>()).FieldNames;
+			Printer = new TradesPrinter(new ExcelWriter(), paramsFieldNames, resultsFieldNames);
 		}
 
 		private void InitRepository(XElement tool)

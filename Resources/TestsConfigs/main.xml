@@ -7,9 +7,11 @@
 		</Types>
 		<Params>
 			<StopLoss Start="200" End="1000" Step="200"/>
-			<!--breakeven-->
+			<BreakevenPercent Start="0.2" End="1.2" Step="0.2"/>
 			<TrailingStopPercent Start="0.6" End="1.8" Step="0.1" />
 			<Pegtop Size="70" />
+			<MaxSkippedCount Size="2" />
+			<EndTime Size="PT23H30M"/>
 		</Params>
 	</Test>
 </Tests>

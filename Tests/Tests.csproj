@@ -105,7 +105,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>if not exist $(TargetDir)Configs\ md $(TargetDir)Configs\
-xcopy /D /E $(SolutionDir)Resources\TestsConfigs\* $(TargetDir)Configs\
+xcopy /D /Y /E $(SolutionDir)Resources\TestsConfigs\*.xml $(TargetDir)Configs\
 if not exist $(TargetDir)History\ md $(TargetDir)History\
 xcopy /D /E $(SolutionDir)Resources\History\* $(TargetDir)History\</PreBuildEvent>
   </PropertyGroup>

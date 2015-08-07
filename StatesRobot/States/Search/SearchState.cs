@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using StatesRobot.States.End;
+using StatesRobot.States.Search.Tools;
 using TradeTools;
 using TradeTools.Events;
 using Utils;
@@ -10,19 +11,6 @@ namespace StatesRobot.States.Search	//TODO !!документация
 {
 	class SearchState : IState
 	{
-		private struct RootElement
-		{
-			public int CandleIndex { get; private set; }
-			public LinkedList<int> Children { get; private set; }
-
-			public RootElement(int candleIndex)
-				: this()
-			{
-				CandleIndex = candleIndex;
-				Children = null;
-			}
-		}
-
 		private readonly LinkedList<RootElement> searchTree;
 		private readonly List<Extremum> firstLongExtremums;
 		private readonly List<Extremum> firstShortExtremums;
@@ -41,15 +29,15 @@ namespace StatesRobot.States.Search	//TODO !!документация
 
 			if (!searchTree.Any())
 			{
-				searchTree.AddLast(new RootElement(currentIndex));
+				searchTree.AddLast(new RootElement(candle, currentIndex));
 				return result;
 			}
 			
 			var leftIter = searchTree.First;
 			while (leftIter != null)
 			{
-				var leftCandle = context.Candles[leftIter.Value.CandleIndex];
-				if (!leftIter.Value.Children.Any())
+				var leftCandle = leftIter.Value.Candle;
+				if (!leftIter.Value.HasChildren())
 				{
 					TryAppendMidCandle(context, candle, ref leftIter);
 					continue;
@@ -58,22 +46,22 @@ namespace StatesRobot.States.Search	//TODO !!документация
 				var midIter = leftIter.Value.Children.First;
 				while (midIter != null)
 				{
-					if (currentIndex - midIter.Value > context.MaxSkippedCandlesCount) //TODO currentIndex
+					if (currentIndex - midIter.Value.Index > context.MaxSkippedCandlesCount) //TODO currentIndex
 					{
 						midIter = leftIter.Value.Children.RemoveElement(midIter);
 						continue;
 					}
 
-					result = TryAppendExtremum(context, leftCandle, context.Candles[midIter.Value], candle) ?? result;
+					result = TryAppendExtremum(context, leftCandle, midIter.Value, candle) ?? result;
 					if (result is DealEvent)
 						return result;
 
 					midIter = midIter.Next;
 				}
 
-				if (currentIndex - leftIter.Value.CandleIndex <= context.MaxSkippedCandlesCount)
+				if (currentIndex - leftIter.Value.Candle.Index <= context.MaxSkippedCandlesCount)	//TODO IsMidCandle
 				{
-					leftIter.Value.Children.AddLast(currentIndex);	//TODO нужна ли вобще свечка в параметрах??
+					leftIter.Value.Children.AddLast(new IndexedCandle(candle, currentIndex));
 				}
 				leftIter = leftIter.Next;
 			}
@@ -116,16 +104,18 @@ namespace StatesRobot.States.Search	//TODO !!документация
 
 		private void TryAppendMidCandle(RobotContext context, Candle candle, ref LinkedListNode<RootElement> leftCandleNode)
 		{
-			if (context.Candles.Count - leftCandleNode.Value.CandleIndex > context.MaxSkippedCandlesCount)
+			if (context.Candles.Count - leftCandleNode.Value.Candle.Index > context.MaxSkippedCandlesCount)
 			{
 				leftCandleNode = searchTree.RemoveElement(leftCandleNode);
+				return;
 			}
-			else if (IsMidCandle(context.Candles[leftCandleNode.Value.CandleIndex], candle))
+			if (IsMidCandle(context.Candles[leftCandleNode.Value.Candle.Index], candle))
 			{
-				leftCandleNode.Value.Children.AddLast(context.Candles.Count);
+				leftCandleNode.Value.Children.AddLast(new IndexedCandle(candle, context.Candles.Count));
 			}
+			leftCandleNode = leftCandleNode.Next;
 		}
-		
+
 		private Extremum TryGetSecondExtremum(bool isMinimum)
 		{
 			if ((isMinimum ? firstShortExtremums : firstLongExtremums).Count < 3)

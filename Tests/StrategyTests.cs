@@ -4,21 +4,24 @@ using NUnit.Framework;
 using StatesRobot;
 using Tests.Tools;
 using TradeTools.Events;
+using Utils.TableWriter;
 
 namespace Tests
 {
 	[TestClass]
 	public class StrategyTests
 	{
-		private void RunTest(TradeParams tradeParams, StatesFactory statesFactory, TradeAdvisor advisor, HistoryRepository repository)
+		private void RunTest(TradeParams tradeParams, StatesFactory statesFactory, HistoryRepository repository, TradesPrinter printer)
 		{
+			var advisor = new TradeAdvisor(repository.Days.First().FiveMins);
 			var robot = new RobotContext(tradeParams, statesFactory, advisor);
 			var results = new TradesResult();
+
 			foreach (var day in repository.Days.Skip(1))
 			{
 				foreach (var candle in day.FiveMins)
 				{
-					var dealEvent = robot.Process(candle) as DealEvent;
+					var dealEvent = robot.Process(candle) as DealEvent;	//TODO Test advisor candles adding
 					if (dealEvent != null)
 					{
 						results.AddDeal(dealEvent.Deal);
@@ -26,15 +29,18 @@ namespace Tests
 				}
 				robot.ClearHistory();
 			}
+
+			printer.AddRow(tradeParams, results);
 		}
 		[TestCase("Configs/main.xml")]
 		public void MainTest(string filename)
 		{
 			var configurator = new Configurator(filename);
 			var repository = configurator.Repository;
-			var advisor = new TradeAdvisor(repository.Days.First().FiveMins);
+			var printer = configurator.Printer;
 
-			configurator.Executor.Execute(tp => RunTest(tp, configurator.Factory, advisor, repository));
+			configurator.Executor.Execute(tp => RunTest(tp, configurator.Factory, repository, printer));
+			printer.Print("MainTest.xlsx");
 		}
 	}
 }

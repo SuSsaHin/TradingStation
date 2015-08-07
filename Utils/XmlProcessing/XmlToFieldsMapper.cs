@@ -7,17 +7,22 @@ namespace Utils.XmlProcessing
 	public class XmlToFieldsMapper<T>
 	{
 		private readonly Dictionary<string, FieldInfo> fields;
+		public readonly IReadOnlyList<string> FieldNames; 
 
 		public XmlToFieldsMapper()
 		{
 			fields = new Dictionary<string, FieldInfo>();
 
-			var namedFields = typeof(T).GetFields().Where(f => f.GetCustomAttributes(typeof (FieldNameAttribute)).Any());
+			var namedFields = typeof(T).GetFields().Where(f => f.GetCustomAttributes(typeof (FieldNameAttribute)).Any()).ToList();
 			foreach (var field in namedFields)
 			{
 				var name = ((FieldNameAttribute)(field.GetCustomAttribute(typeof(FieldNameAttribute)))).Name.ToLower();
 				fields[name] = field;
 			}
+
+			FieldNames = namedFields
+					.Select(field => ((FieldNameAttribute) (field.GetCustomAttribute(typeof (FieldNameAttribute)))).Name)
+					.ToList();
 		}
 
 		public FieldInfo GetFieldInfo(string name)

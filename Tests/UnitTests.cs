@@ -26,7 +26,7 @@ namespace Tests
 		[TestMethod]
 		public void TestConfigurator()
 		{
-			var cr = new Configurator("Configs/TestConfig.xml");
+			var cr = new Configurator("Configs/main.xml");
 			cr.Executor.Execute(tp => Console.WriteLine("{0}, {1}, {2}", tp.PegtopSize, tp.TrailingStopPercent, tp.StopLoss));
 		}
 
@@ -48,6 +48,7 @@ namespace Tests
 		{
 			var test = new TimeSpan(0, 10, 0);
 			var testEl = new XElement("N1", test);
+			//Console.WriteLine(testEl.Value);
 			Assert.That(typeof(TimeSpan).DynamicCast(testEl) == test);
 		}
 	}
