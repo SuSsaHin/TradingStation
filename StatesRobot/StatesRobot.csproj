@@ -42,8 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="States\Search\Tools\IndexedCandle.cs" />
-    <Compile Include="States\Search\Tools\RootElement.cs" />
+    <Compile Include="States\Search\Tools\CandleNode.cs" />
     <Compile Include="States\Trade\DynamicTradeState.cs" />
     <Compile Include="States\Trade\BreakevenTradeState.cs" />
     <Compile Include="TradeAdvisor.cs" />

@@ -20,6 +20,10 @@ namespace TradeTools
 			CanBeSecond = true;
 		}
 
+		public Extremum(Candle extremumCandle, int checkerIndex, bool isMinimum) 
+			: this(isMinimum ? extremumCandle.Low : extremumCandle.High, checkerIndex, extremumCandle.DateTime, isMinimum)
+		{ }
+
         public override string ToString()
         {
             return DateTime + " (" + CheckerIndex +  "): " + Value + ", " + (IsMinimum ? "min" : "max") + ", " + (CanBeSecond ? "Can be second" : "Can't be second");

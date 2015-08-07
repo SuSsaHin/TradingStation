@@ -30,7 +30,7 @@ namespace StatesRobot
 
 		public RobotContext(TradeParams tradeParams, StatesFactory factory, TradeAdvisor advisor, List<Candle> history = null)
 		{
-			candles = history ?? new List<Candle>();
+			candles = history ?? new List<Candle>();	//IMPROVE историю хранить не нужно
 			Advisor = advisor;
 			Factory = factory;
 

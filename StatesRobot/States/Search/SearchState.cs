@@ -11,89 +11,17 @@ namespace StatesRobot.States.Search	//TODO !!документация
 {
 	class SearchState : IState
 	{
-		private readonly LinkedList<RootElement> searchTree;
-		private readonly List<Extremum> firstLongExtremums;
-		private readonly List<Extremum> firstShortExtremums;
+		private readonly LinkedList<CandleNode> searchTree;
+		private readonly int maxSkippedCandlesCount;
 
 		public SearchState(RobotContext context)
 		{
-			searchTree = new LinkedList<RootElement>();	//TODO заполнить по history!
-			firstLongExtremums = new List<Extremum>();
-			firstShortExtremums = new List<Extremum>();
-		}
-
-		public ITradeEvent Process(RobotContext context, Candle candle)
-		{
-			ITradeEvent result = null; //TODO SearchInfoEvent
-			int currentIndex = context.Candles.Count;
-
-			if (!searchTree.Any())
+			searchTree = new LinkedList<CandleNode>();
+			for (int i = 0; i < context.Candles.Count; ++i)
 			{
-				searchTree.AddLast(new RootElement(candle, currentIndex));
-				return result;
+				AppendToTree(context.Candles[i], i);
 			}
-			
-			var leftIter = searchTree.First;
-			while (leftIter != null)
-			{
-				var leftCandle = leftIter.Value.Candle;
-				if (!leftIter.Value.HasChildren())
-				{
-					TryAppendMidCandle(context, candle, ref leftIter);
-					continue;
-				}
-
-				var midIter = leftIter.Value.Children.First;
-				while (midIter != null)
-				{
-					if (currentIndex - midIter.Value.Index > context.MaxSkippedCandlesCount) //TODO currentIndex
-					{
-						midIter = leftIter.Value.Children.RemoveElement(midIter);
-						continue;
-					}
-
-					result = TryAppendExtremum(context, leftCandle, midIter.Value, candle) ?? result;
-					if (result is DealEvent)
-						return result;
-
-					midIter = midIter.Next;
-				}
-
-				if (currentIndex - leftIter.Value.Candle.Index <= context.MaxSkippedCandlesCount)	//TODO IsMidCandle
-				{
-					leftIter.Value.Children.AddLast(new IndexedCandle(candle, currentIndex));
-				}
-				leftIter = leftIter.Next;
-			}
-
-			return result;
-		}
-
-		private ITradeEvent TryAppendExtremum(RobotContext context, Candle leftCandle, Candle midCandle, Candle processedCandle)
-		{
-			int currentIndex = context.Candles.Count;
-
-			if (!IsRightCandle(leftCandle, midCandle, processedCandle)) 
-				return null;
-
-			var isMinimum = IsMinimum(leftCandle, midCandle, processedCandle);
-			if (isMinimum)
-			{
-				firstShortExtremums.Add(new Extremum(processedCandle.Close, currentIndex, processedCandle.DateTime, true));
-			}
-			else
-			{
-				firstLongExtremums.Add(new Extremum(processedCandle.Close, currentIndex, processedCandle.DateTime, false));
-			}
-
-			var extremum = TryGetSecondExtremum(isMinimum);
-			if (extremum == null)
-				return null;
-
-			if (NeedToTrade(context, extremum))
-				return new DealEvent(new Deal(processedCandle.Close, processedCandle.DateTime, extremum.IsMinimum), extremum);
-
-			return new SecondExtremumEvent(extremum, firstLongExtremums, firstShortExtremums);
+			maxSkippedCandlesCount = context.MaxSkippedCandlesCount;
 		}
 
 		public ITradeEvent StopTrading(RobotContext context)
@@ -102,33 +30,71 @@ namespace StatesRobot.States.Search	//TODO !!документация
 			return new EndEvent();
 		}
 
-		private void TryAppendMidCandle(RobotContext context, Candle candle, ref LinkedListNode<RootElement> leftCandleNode)
+		public ITradeEvent Process(RobotContext context, Candle candle)
 		{
-			if (context.Candles.Count - leftCandleNode.Value.Candle.Index > context.MaxSkippedCandlesCount)
-			{
-				leftCandleNode = searchTree.RemoveElement(leftCandleNode);
-				return;
-			}
-			if (IsMidCandle(context.Candles[leftCandleNode.Value.Candle.Index], candle))
-			{
-				leftCandleNode.Value.Children.AddLast(new IndexedCandle(candle, context.Candles.Count));
-			}
-			leftCandleNode = leftCandleNode.Next;
+			int currentIndex = context.Candles.Count;
+			var bestSecondExtremum = AppendToTree(candle, currentIndex);
+
+			if (bestSecondExtremum == null)
+				return null;	//TODO SearchInfoEvent
+
+			if (NeedToTrade(context, bestSecondExtremum))
+				return new DealEvent(new Deal(candle.Close, candle.DateTime, bestSecondExtremum.IsMinimum));
+
+			return new SecondExtremumEvent(secondExtremum, extremumsRepo.FirstMaximums, extremumsRepo.FirstMinimums);
 		}
 
-		private Extremum TryGetSecondExtremum(bool isMinimum)
+		private Extremum AppendToTree(Candle candle, int currentIndex)
 		{
-			if ((isMinimum ? firstShortExtremums : firstLongExtremums).Count < 3)
-				return null;
+			var leftIter = searchTree.First;
+			Extremum bestSecondExtremum = null;
+			while (leftIter != null)
+			{
+				if (TryRemoveUnusefull(ref leftIter, currentIndex))
+					continue;
 
-			var right = firstLongExtremums[firstLongExtremums.Count - 1];
-			var mid = firstLongExtremums[firstLongExtremums.Count - 2];
-			var left = firstLongExtremums[firstLongExtremums.Count - 3];
-			if (isMinimum? (mid.Value < left.Value && mid.Value < right.Value) :
-							(mid.Value > left.Value && mid.Value > right.Value))
-				return new Extremum(mid.Value, right.CheckerIndex, mid.DateTime, isMinimum);
+				var midIter = leftIter.Value.Children.First;
+				while (midIter != null)
+				{
+					if (TryRemoveUnusefull(ref midIter, currentIndex))
+						continue;
 
-			return null;
+					if (IsSkipped(midIter.Value.Candle, candle))
+						continue;
+
+					var extremum = TryGetExtremum(leftIter.Value.Candle, midIter.Value.Candle, candle, currentIndex);
+					if (extremum == null)
+					{
+						leftIter = searchTree.RemoveElement(leftIter);
+						goto NextIteration;
+					}
+
+					var secondExtremum = extremumsRepo.AddExtremum(extremum);
+					if (secondExtremum != null && (bestSecondExtremum == null || bestSecondExtremum.DateTime < secondExtremum.DateTime))
+					{
+						bestSecondExtremum = secondExtremum;
+					}
+				}
+
+				if (IsSkipped(leftIter.Value.Candle, candle))
+				{
+					leftIter.Value.Children.AddLast(new CandleNode(candle, currentIndex));
+				}
+				leftIter = leftIter.Next;
+			NextIteration:;
+			}
+
+			searchTree.AddLast(new CandleNode(candle, currentIndex));
+			return bestSecondExtremum;
+		}
+
+		private bool TryRemoveUnusefull(ref LinkedListNode<CandleNode> node, int currentIndex)
+		{
+			if (node.Value.HasChildren() || currentIndex - node.Value.CandleIndex < maxSkippedCandlesCount)
+				return false;
+
+			node = node.List.RemoveElement(node);
+			return true;
 		}
 
 		private bool NeedToTrade(RobotContext context, Extremum secondExtremum)
@@ -136,15 +102,18 @@ namespace StatesRobot.States.Search	//TODO !!документация
 			return secondExtremum.IsMinimum == IsTrendLong(context.Candles);
 		}
 
-		private bool IsMidCandle(Candle leftCandle, Candle midCandle)
+		private bool IsSkipped(Candle previous, Candle current)
 		{
-			return !midCandle.IsOuterTo(leftCandle) && !midCandle.IsInnerTo(leftCandle);
+			return !current.IsOuterTo(previous) && !current.IsInnerTo(previous);
 		}
 
-		private bool IsRightCandle(Candle leftCandle, Candle midCandle, Candle rightCandle)
+		private Extremum TryGetExtremum(Candle leftCandle, Candle midCandle, Candle rightCandle, int rightIndex)
 		{
-			return !rightCandle.IsOuterTo(midCandle) && !rightCandle.IsInnerTo(midCandle) &&
-				(IsMinimum(leftCandle, midCandle, rightCandle) || IsMaximum(leftCandle, midCandle, rightCandle));
+			var isMinimum = IsMinimum(leftCandle, midCandle, rightCandle);
+			if (!isMinimum && !IsMaximum(leftCandle, midCandle, rightCandle))
+				return null;
+
+			return new Extremum(midCandle, rightIndex, isMinimum);
 		}
 
 		private bool IsMaximum(Candle left, Candle mid, Candle right)
