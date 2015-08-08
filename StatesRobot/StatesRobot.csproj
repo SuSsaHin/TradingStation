@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="States\Search\Tools\CandleNode.cs" />
+    <Compile Include="States\Search\Tools\ExtremumsRepository.cs" />
     <Compile Include="States\Trade\DynamicTradeState.cs" />
     <Compile Include="States\Trade\BreakevenTradeState.cs" />
     <Compile Include="TradeAdvisor.cs" />

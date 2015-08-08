@@ -5,7 +5,7 @@ namespace TradeTools.Events
 {
 	public class SecondExtremumEvent : ITradeEvent
 	{
-		public SecondExtremumEvent(Extremum extremum, IReadOnlyList<Extremum> firstLongExtremums, IReadOnlyList<Extremum> firstShortExtremums)
+		public SecondExtremumEvent(Extremum extremum, ICollection<Extremum> firstLongExtremums, ICollection<Extremum> firstShortExtremums)
 		{
 			FirstShortExtremums = firstShortExtremums;
 			FirstLongExtremums = firstLongExtremums;
@@ -13,7 +13,7 @@ namespace TradeTools.Events
 		}
 
 		public Extremum Extremum { get; private set; }
-		public IReadOnlyList<Extremum> FirstLongExtremums { get; private set; }
-		public IReadOnlyList<Extremum> FirstShortExtremums { get; private set; }
+		public ICollection<Extremum> FirstLongExtremums { get; private set; }
+		public ICollection<Extremum> FirstShortExtremums { get; private set; }
 	}
 }

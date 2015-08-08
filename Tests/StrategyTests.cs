@@ -4,11 +4,10 @@ using NUnit.Framework;
 using StatesRobot;
 using Tests.Tools;
 using TradeTools.Events;
-using Utils.TableWriter;
 
 namespace Tests
 {
-	[TestClass]
+    [TestClass]
 	public class StrategyTests
 	{
 		private void RunTest(TradeParams tradeParams, StatesFactory statesFactory, HistoryRepository repository, TradesPrinter printer)

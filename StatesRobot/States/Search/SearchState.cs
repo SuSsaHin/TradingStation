@@ -11,12 +11,15 @@ namespace StatesRobot.States.Search	//TODO !!документация
 {
 	class SearchState : IState
 	{
+		private readonly ExtremumsRepository extremumsRepo;
 		private readonly LinkedList<CandleNode> searchTree;
 		private readonly int maxSkippedCandlesCount;
 
 		public SearchState(RobotContext context)
 		{
+			extremumsRepo = new ExtremumsRepository();
 			searchTree = new LinkedList<CandleNode>();
+
 			for (int i = 0; i < context.Candles.Count; ++i)
 			{
 				AppendToTree(context.Candles[i], i);
@@ -41,7 +44,7 @@ namespace StatesRobot.States.Search	//TODO !!документация
 			if (NeedToTrade(context, bestSecondExtremum))
 				return new DealEvent(new Deal(candle.Close, candle.DateTime, bestSecondExtremum.IsMinimum));
 
-			return new SecondExtremumEvent(secondExtremum, extremumsRepo.FirstMaximums, extremumsRepo.FirstMinimums);
+			return new SecondExtremumEvent(bestSecondExtremum, extremumsRepo.FirstMaximums, extremumsRepo.FirstMinimums);
 		}
 
 		private Extremum AppendToTree(Candle candle, int currentIndex)
