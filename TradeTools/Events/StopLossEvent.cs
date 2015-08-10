@@ -2,15 +2,10 @@
 
 namespace TradeTools.Events
 {
-	public class StopLossEvent : ITradeEvent
+	public class StopLossEvent : DealEvent
 	{
-		public bool IsTrendLong { get; private set; }
-		public int Price { get; private set; }
 
-		public StopLossEvent(bool isTrendLong, int price)
-		{
-			Price = price;
-			IsTrendLong = isTrendLong;
-		}
+		public StopLossEvent(Deal deal) : base(deal)
+		{}
 	}
 }

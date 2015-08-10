@@ -8,10 +8,8 @@ namespace StatesRobot.States.Trade
 	{
 		private bool hasBreakeven;
 
-		public BreakevenTradeState(int startPrice, bool isTrendLong)
-			: base(startPrice, isTrendLong)
-		{
-		}
+		public BreakevenTradeState(RobotContext context, Deal deal) : base(context, deal)
+		{}
 
 		public override ITradeEvent Process(RobotContext context, Candle candle)
 		{
@@ -20,13 +18,13 @@ namespace StatesRobot.States.Trade
 				return result;
 
 			if (!hasBreakeven &&
-				(IsTrendLong && candle.High >= StartPrice + context.StopLoss ||
-				!IsTrendLong && candle.Low <= StartPrice - context.StopLoss))
+				(TrendIsLong && candle.High >= StartPrice + context.StopLossSize ||
+				!TrendIsLong && candle.Low <= StartPrice - context.StopLossSize))
 			{
 				hasBreakeven = true;
 
-				context.StopLoss = -context.BreakevenSize;
-				return new StopLossMovingEvent(IsTrendLong ? StartPrice - context.StopLoss : StartPrice + context.StopLoss, IsTrendLong);
+				context.StopLossPrice = GetStopPrice(StartPrice, -context.BreakevenSize);
+				return new StopLossMovingEvent(context.StopLossPrice, TrendIsLong);
 			}
 			
 			return null;

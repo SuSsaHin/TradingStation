@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using StatesRobot.States.End;
 using StatesRobot.States.Search.Tools;
 using TradeTools;
 using TradeTools.Events;
@@ -29,20 +28,24 @@ namespace StatesRobot.States.Search	//TODO !!документация
 
 		public ITradeEvent StopTrading(RobotContext context)
 		{
-			context.CurrentState = new EndState();
+			context.CurrentState = context.Factory.GetEndState();
 			return new EndEvent();
 		}
 
 		public ITradeEvent Process(RobotContext context, Candle candle)
 		{
-			int currentIndex = context.Candles.Count;
+			int currentIndex = context.Candles.Count - 1;
 			var bestSecondExtremum = AppendToTree(candle, currentIndex);
 
 			if (bestSecondExtremum == null)
 				return null;	//TODO SearchInfoEvent
 
 			if (NeedToTrade(context, bestSecondExtremum))
-				return new DealEvent(new Deal(candle.Close, candle.DateTime, bestSecondExtremum.IsMinimum));
+			{
+				var deal = new Deal(candle.Close, candle.DateTime, bestSecondExtremum.IsMinimum);
+				context.CurrentState = context.Factory.GetTradeState(context, deal);
+				return new DealEvent(deal);
+			}
 
 			return new SecondExtremumEvent(bestSecondExtremum, extremumsRepo.FirstMaximums, extremumsRepo.FirstMinimums);
 		}
@@ -50,7 +53,7 @@ namespace StatesRobot.States.Search	//TODO !!документация
 		private Extremum AppendToTree(Candle candle, int currentIndex)
 		{
 			var leftIter = searchTree.First;
-			Extremum bestSecondExtremum = null;
+			Extremum lastSecondExtremum = null;
 			while (leftIter != null)
 			{
 				if (TryRemoveUnusefull(ref leftIter, currentIndex))
@@ -63,7 +66,10 @@ namespace StatesRobot.States.Search	//TODO !!документация
 						continue;
 
 					if (IsSkipped(midIter.Value.Candle, candle))
+					{
+						midIter = midIter.Next;
 						continue;
+					}
 
 					var extremum = TryGetExtremum(leftIter.Value.Candle, midIter.Value.Candle, candle, currentIndex);
 					if (extremum == null)
@@ -72,14 +78,15 @@ namespace StatesRobot.States.Search	//TODO !!документация
 						goto NextIteration;
 					}
 
+					midIter = midIter.RemoveFromList();
 					var secondExtremum = extremumsRepo.AddExtremum(extremum);
-					if (secondExtremum != null && (bestSecondExtremum == null || bestSecondExtremum.DateTime < secondExtremum.DateTime))
+					if (secondExtremum != null && (lastSecondExtremum == null || lastSecondExtremum.DateTime < secondExtremum.DateTime))
 					{
-						bestSecondExtremum = secondExtremum;
+						lastSecondExtremum = secondExtremum;
 					}
 				}
 
-				if (IsSkipped(leftIter.Value.Candle, candle))
+				if (!IsSkipped(leftIter.Value.Candle, candle))
 				{
 					leftIter.Value.Children.AddLast(new CandleNode(candle, currentIndex));
 				}
@@ -88,15 +95,15 @@ namespace StatesRobot.States.Search	//TODO !!документация
 			}
 
 			searchTree.AddLast(new CandleNode(candle, currentIndex));
-			return bestSecondExtremum;
+			return lastSecondExtremum;
 		}
 
 		private bool TryRemoveUnusefull(ref LinkedListNode<CandleNode> node, int currentIndex)
 		{
-			if (node.Value.HasChildren() || currentIndex - node.Value.CandleIndex < maxSkippedCandlesCount)
+			if (node.Value.HasChildren() || currentIndex - node.Value.CandleIndex <= maxSkippedCandlesCount)
 				return false;
 
-			node = node.List.RemoveElement(node);
+			node = node.RemoveFromList();
 			return true;
 		}
 
@@ -107,7 +114,7 @@ namespace StatesRobot.States.Search	//TODO !!документация
 
 		private bool IsSkipped(Candle previous, Candle current)
 		{
-			return !current.IsOuterTo(previous) && !current.IsInnerTo(previous);
+			return current.IsOuterTo(previous) || current.IsInnerTo(previous);
 		}
 
 		private Extremum TryGetExtremum(Candle leftCandle, Candle midCandle, Candle rightCandle, int rightIndex)

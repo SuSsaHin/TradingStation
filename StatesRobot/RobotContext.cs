@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using StatesRobot.States;
-using StatesRobot.States.Search;
 using TradeTools;
 using Utils.Events;
 
@@ -9,20 +8,17 @@ namespace StatesRobot
 {
 	public class RobotContext
 	{
-		private readonly CandlesFormer candlesFormer = new CandlesFormer();
 		private readonly List<Candle> candles;
-		internal StatesFactory Factory { get; private set; }
-		internal TradeAdvisor Advisor { get; private set; }
-		internal int StopLoss { get; set; }
-		internal int TrailingStopLoss { get; private set; }
-		internal int BreakevenSize { get; private set; }
-		internal int PegtopSize { get; private set; }
-		internal TimeSpan EndTime { get; private set; }
+		internal StatesFactory Factory { get; }
+		internal TradeAdvisor Advisor { get; }
+		internal int StopLossPrice { get; set; }
+		internal int StopLossSize { get; }
+		internal int TrailingStopLoss { get;}
+		internal int BreakevenSize { get; }
+		internal int PegtopSize { get; }
+		internal TimeSpan EndTime { get; }
 
-		internal IReadOnlyList<Candle> Candles
-		{
-			get { return candles; }
-		}
+		internal IReadOnlyList<Candle> Candles => candles;
 
 		internal int MaxSkippedCandlesCount { get; private set; }
 
@@ -34,27 +30,22 @@ namespace StatesRobot
 			Advisor = advisor;
 			Factory = factory;
 
-			StopLoss = tradeParams.StopLoss;
-			TrailingStopLoss = (int) (StopLoss*tradeParams.TrailingStopPercent);
-			BreakevenSize = (int) (StopLoss*tradeParams.BreakevenPercent);
+			StopLossSize = tradeParams.StopLoss;
+			TrailingStopLoss = (int) (StopLossSize * tradeParams.TrailingStopPercent);
+			BreakevenSize = (int) (StopLossSize * tradeParams.BreakevenPercent);
 			PegtopSize = tradeParams.PegtopSize;
 			EndTime = tradeParams.EndTime;
 			MaxSkippedCandlesCount = tradeParams.MaxSkippedCandlesCount;
 
-			CurrentState = new SearchState(this);
+			InitState();
 		}
 
 		public ITradeEvent Process(Candle candle)
 		{
 			Advisor.AddCandle(candle);
-			var result = CurrentState.Process(this, candle);
 			candles.Add(candle);
+			var result = CurrentState.Process(this, candle);
 			return result;
-		}
-
-		public ITradeEvent Process(Tick tick)
-		{
-			return Process(candlesFormer.AddTick(tick));
 		}
 
 		public ITradeEvent StopTrading()
@@ -62,9 +53,16 @@ namespace StatesRobot
 			return CurrentState.StopTrading(this);
 		}
 
-		public void ClearHistory()
+		public void Reset()
 		{
+			StopLossPrice = 0;
 			candles.Clear();
+			InitState();
+		}
+
+		private void InitState()
+		{
+			CurrentState = Factory.GetSearchState(this);
 		}
 	}
 }

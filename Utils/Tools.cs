@@ -18,6 +18,11 @@ namespace Utils
 				.MakeGenericMethod(castType).Invoke(null, new [] { casted });
 		}
 
+		public static LinkedListNode<T> RemoveFromList<T>(this LinkedListNode<T> element)
+		{
+			return element.List.RemoveElement(element);
+		}
+
 		public static LinkedListNode<T> RemoveElement<T>(this LinkedList<T> list, LinkedListNode<T> element)
 		{
 			var next = element.Next;
@@ -38,7 +43,7 @@ namespace Utils
 			return null;
 		}
 
-		public static string ToEnString(this double num, int decimals = 6)
+		public static string ToEnString(this double num, int decimals = 3)
 		{
 			return Math.Round(num, decimals).ToString(new CultureInfo("en-us"));
 		}

@@ -1,4 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.Configuration;
+using System.Globalization;
+using System.IO;
+using System.Linq;
 using System.Xml.Linq;
 using StatesRobot;
 using Utils.Loops;
@@ -9,9 +13,15 @@ namespace Tests.Tools
 {
 	class Configurator
 	{
-		private LoopsGenerator<TradeParams> loopsExecutor; 
+		private const string defaultConfigsPath = "Configs/default.xml";
+
+		private string printsDir;
+
+		private LoopsGenerator<TradeParams> loopsExecutor;
+		private string workingDirectory;
+
 		public StatesFactory Factory { get; private set; }
-		public IExecutor<TradeParams> Executor { get { return loopsExecutor; } }
+		public IExecutor<TradeParams> Executor => loopsExecutor;
 		public HistoryRepository Repository { get; private set; }
 		public TradesPrinter Printer { get; private set; }
 
@@ -21,17 +31,20 @@ namespace Tests.Tools
 			var testNode = document.Descendants("Test").Single();
 			var paramsNode = testNode.Descendants("Params").Single();
 
+			InitDefaults();
 			InitFactory(testNode.Descendants("Types").Single());
 			InitLoops(paramsNode);
 			InitRepository(testNode.Descendants("Tool").Single());
-			InitPrinter(paramsNode);
+			InitTradesPrinter(paramsNode);
+
+			CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-us");
 		}
 
-		private void InitPrinter(XElement parmeters)
+		private void InitTradesPrinter(XElement parmeters)
 		{
 			var paramsFieldNames = parmeters.Descendants().Select(el => el.Name.LocalName).ToList();
 			var resultsFieldNames = (new XmlToFieldsMapper<TradesResult>()).FieldNames;
-			Printer = new TradesPrinter(new ExcelWriter(), paramsFieldNames, resultsFieldNames);
+			Printer = new TradesPrinter(new ExcelWriter(), paramsFieldNames, resultsFieldNames, workingDirectory, printsDir);
 		}
 
 		private void InitRepository(XElement tool)
@@ -40,9 +53,26 @@ namespace Tests.Tools
 			Repository = new HistoryRepository(tool.Value, isTicks != null && (bool)isTicks);
 		}
 
+		private void InitDefaults()
+		{
+			var defaults = XDocument.Load(defaultConfigsPath);
+
+			var paramsNode = defaults.Descendants("Params").Single();
+			loopsExecutor = new LoopsGenerator<TradeParams>(GetDefaultTradeParams(paramsNode));
+
+			var pathsNode = defaults.Descendants("Paths").Single();
+			workingDirectory = pathsNode.Descendants("WorkingDirectory").Single().Value;
+			if (string.IsNullOrWhiteSpace(workingDirectory))
+				throw new Exception("You should specify working directory");
+
+			Directory.CreateDirectory(workingDirectory);
+
+			printsDir = pathsNode.Descendants("Prints").Single().Value;
+			Directory.CreateDirectory(Path.Combine(workingDirectory, printsDir));
+		}
+
 		private void InitLoops(XElement parameters)
 		{
-			loopsExecutor = new LoopsGenerator<TradeParams>();
 			foreach (var p in parameters.Descendants())
 			{
 				var sizeAttr = p.Attribute("Size");
@@ -76,6 +106,21 @@ namespace Tests.Tools
 					break;
 			}
 			Factory = new StatesFactory(tsType);
+		}
+
+		private TradeParams GetDefaultTradeParams(XElement paramsNode)
+		{
+			var mapper = new XmlToFieldsMapper<TradeParams>();
+			var tradeParams = new TradeParams();
+			foreach (var param in paramsNode.Descendants())
+			{
+				var name = param.Name.LocalName;
+				if (!mapper.ContainsField(name))
+					throw new SettingsPropertyNotFoundException($"Can't found property {name}");
+
+				mapper.SetValue(name, tradeParams, param.Attribute("Size"));
+			}
+			return tradeParams;
 		}
 	}
 }

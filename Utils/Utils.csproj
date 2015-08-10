@@ -51,7 +51,7 @@
     <Compile Include="Statistics.cs" />
     <Compile Include="TableWriter\ExcelWriter.cs" />
     <Compile Include="Tools.cs" />
-    <Compile Include="XmlProcessing\FieldNameAttribute.cs" />
+    <Compile Include="XmlProcessing\PropNameAttribute.cs" />
     <Compile Include="XmlProcessing\XmlToFieldsMapper.cs" />
   </ItemGroup>
   <ItemGroup>

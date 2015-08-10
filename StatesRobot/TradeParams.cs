@@ -5,22 +5,22 @@ namespace StatesRobot
 {
 	public class TradeParams
 	{
-		[FieldName("StopLoss")]
-		public int StopLoss;
+		[PropName("StopLoss")]
+		public int StopLoss { get; set; }
 
-		[FieldName("BreakevenPercent")]
-		public decimal BreakevenPercent;
+		[PropName("BreakevenPercent")]
+		public decimal BreakevenPercent { get; set; }
 
-		[FieldName("TrailingStopPercent")]
-		public decimal TrailingStopPercent;
+		[PropName("TrailingStopPercent")]
+		public decimal TrailingStopPercent { get; set; }
 
-		[FieldName("Pegtop")]
-		public int PegtopSize;
+		[PropName("Pegtop")]
+		public int PegtopSize { get; set; }
 
-		[FieldName("EndTime")]
-		public TimeSpan EndTime;
+		[PropName("EndTime")]
+		public TimeSpan EndTime { get; set; }
 
-		[FieldName("MaxSkippedCount")]
-		public int MaxSkippedCandlesCount;
+		[PropName("MaxSkippedCount")]
+		public int MaxSkippedCandlesCount { get; set; }
 	}
 }

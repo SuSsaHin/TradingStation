@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using TradeTools;
 using Wintellect.PowerCollections;
 
 namespace StatesRobot.States.Search.Tools
 {
-	internal class ExtremumsRepository
+	public class ExtremumsRepository
 	{
 		private readonly OrderedSet<Extremum> firstMaximums;
 		private readonly OrderedSet<Extremum> firstMinimums;
@@ -49,12 +48,12 @@ namespace StatesRobot.States.Search.Tools
 
 		private Extremum TryGetSecondMaximum()
 		{
-			int last = firstMinimums.Count - 1;
-			if (firstMinimums[last - 1].Value > firstMinimums[last].Value &&
-					(firstMinimums[last - 1].Value > firstMinimums[last - 2].Value ||
-					firstMinimums[last - 1].Value == firstMinimums[last - 2].Value &&
-					last - 3 >= 0 && firstMinimums[last - 1].Value > firstMinimums[last - 3].Value))
-				return SaveSecondExtremum(firstMinimums[last - 1], firstMinimums[last]);
+			int last = firstMaximums.Count - 1;
+			if (firstMaximums[last - 1].Value > firstMaximums[last].Value &&
+					(firstMaximums[last - 1].Value > firstMaximums[last - 2].Value ||
+					firstMaximums[last - 1].Value == firstMaximums[last - 2].Value &&
+					last - 3 >= 0 && firstMaximums[last - 1].Value > firstMaximums[last - 3].Value))
+				return SaveSecondExtremum(firstMaximums[last - 1], firstMaximums[last]);
 
 			return null;
 		}
@@ -86,11 +85,11 @@ namespace StatesRobot.States.Search.Tools
 			if (left.DateTime < right.DateTime)
 				return -1;
 
-			if (left.CheckerIndex > right.CheckerIndex)
+			/*if (left.CheckerIndex > right.CheckerIndex)
 				return 1;
 
 			if (left.CheckerIndex < right.CheckerIndex)
-				return -1;
+				return -1;*/
 
 			return 0;
 		}

@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using StatesRobot.States.End;
 using TradeTools;
 using TradeTools.Events;
 using Utils.Events;
@@ -8,29 +7,29 @@ namespace StatesRobot.States.Trade
 {
 	class BasicTradeState : IState
 	{
-		protected int StartPrice { get; private set; }
-		protected bool IsTrendLong { get; private set; }
+		protected int StartPrice { get; }
+		protected bool TrendIsLong { get; }
 
-		public BasicTradeState(int startPrice, bool isTrendLong)
+		public BasicTradeState(RobotContext context, Deal deal)
 		{
-			StartPrice = startPrice;
-			IsTrendLong = isTrendLong;
+			StartPrice = deal.Price;
+			TrendIsLong = deal.IsBuy;
+			context.StopLossPrice = GetStopPrice(StartPrice, context.StopLossSize);
 		}
 
 		public virtual ITradeEvent Process(RobotContext context, Candle candle)
 		{
 			if (candle.Time >= context.EndTime)
 			{
-				context.CurrentState = new EndState();
-				return new DealEvent(new Deal(candle.Close, candle.DateTime, !IsTrendLong));
+				context.CurrentState = context.Factory.GetEndState();
+				return new DealEvent(new Deal(candle.Close, candle.DateTime, !TrendIsLong));
 			}
 
-			int endPrice;
-			if (IsTrendLong && candle.Low <= (endPrice = StartPrice - context.StopLoss) ||
-				!IsTrendLong && candle.High >= (endPrice = StartPrice + context.StopLoss))
+			if (TrendIsLong && candle.Low <= context.StopLossPrice ||
+				!TrendIsLong && candle.High >= context.StopLossPrice)
 			{
-				context.CurrentState = new EndState();
-				return new StopLossEvent(IsTrendLong, endPrice);
+				context.CurrentState = context.Factory.GetEndState();
+				return new StopLossEvent(new Deal(context.StopLossPrice, candle.DateTime, !TrendIsLong));
 			}
 			
 			return null;
@@ -38,9 +37,14 @@ namespace StatesRobot.States.Trade
 
 		public virtual ITradeEvent StopTrading(RobotContext context)
 		{
-			context.CurrentState = new EndState();
+			context.CurrentState = context.Factory.GetEndState();
 			var lastCandle = context.Candles.Last();
-			return new DealEvent(new Deal(lastCandle.Close, lastCandle.DateTime, !IsTrendLong));
+			return new DealEvent(new Deal(lastCandle.Close, lastCandle.DateTime, !TrendIsLong));
+		}
+
+		protected int GetStopPrice(int startValue, int offset)
+		{
+			return startValue + (TrendIsLong ? -offset : offset);
 		}
 	}
 }

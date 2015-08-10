@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Tests>
+	<Params>
+		<StopLoss Size="800"/>
+		<BreakevenPercent Size="0.8"/>
+		<TrailingStopPercent Size="1.2" />
+		<Pegtop Size="70" />
+		<MaxSkippedCount Size="2" />
+		<EndTime Size="PT23H30M"/>
+	</Params>
+  <Paths>
+    <WorkingDirectory>D:\TradesTest\</WorkingDirectory>
+    <Prints>Prints\</Prints>
+  </Paths>
+</Tests>

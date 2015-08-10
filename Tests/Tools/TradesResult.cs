@@ -4,10 +4,11 @@ using System.IO;
 using System.Linq;
 using TradeTools;
 using Utils;
+using Utils.XmlProcessing;
 
 namespace Tests.Tools
 {
-	public class TradesResult 	//TODO FieldNames
+	internal class TradesResult 	//TODO FieldNames
 	{
 		private readonly List<Trade> trades = new List<Trade>();
 		private readonly Stack<Deal> deals = new Stack<Deal>(); 
@@ -20,29 +21,24 @@ namespace Tests.Tools
 		private int maxDepoSize = startDepoSize;
 
 		public const int Comission = 30;
+		public IReadOnlyList<Trade> Trades => trades;
 
+		[PropName("MaxDropdown")]
 		public double MaxDropdown { get; private set; }
+
+		[PropName("MaxDropdownLength")]
 		public int MaxDropdownLength { get; private set; }
-		public int Profit 
-		{
-			get { return trades.Sum(d => d.Profit); } 
-		}
-		public int DealsCount { get { return trades.Count; } }
 
-		public int GoodCount 
-		{
-			get { return trades.Count(d => d.IsGood); } 
-		}
+		[PropName("Profit")]
+		public int Profit => trades.Sum(d => d.Profit);
 
-		public int BadCount
-		{
-			get { return trades.Count(d => !d.IsGood); }
-		}
+		public int DealsCount => trades.Count;
 
-		public int Volume
-		{
-			get { return trades.Sum(deal => Math.Abs(deal.Profit)); }
-		}
+		public int GoodCount => trades.Count(d => d.IsGood);
+
+		public int BadCount => trades.Count(d => !d.IsGood);
+
+		public int Volume => trades.Sum(deal => Math.Abs(deal.Profit));
 
 		public int MaxLoss
 		{
@@ -80,17 +76,11 @@ namespace Tests.Tools
 			}
 		}
 
-		public int LongGoodCount
-		{
-			get { return trades.Count(d => d.IsGood && d.IsTrendLong); }
-		}
+		public int LongGoodCount => trades.Count(d => d.IsGood && d.IsLong);
 
-		public int ShortGoodCount
-		{
-			get { return trades.Count(d => d.IsGood && !d.IsTrendLong); }
-		}
+		public int ShortGoodCount => trades.Count(d => d.IsGood && !d.IsLong);
 
-		public bool DealsAreClosed { get { return !deals.Any(); } }
+		public bool DealsAreClosed => !deals.Any();
 
 		public static List<string> GetHeaders() //TODO FieldNames
 	    {
@@ -108,14 +98,12 @@ namespace Tests.Tools
                                 LongGoodCount.ToString(), ShortGoodCount.ToString()};
 	    }
 
-		public override string ToString() //TODO FieldNames
+		public override string ToString()
 		{
-			return string.Format("Good: {0}, Bad: {1}, Profit: {2}, Volume: {3}, Profit percent: {4},\n" +
-								 "Max loss: {5}, Max profit: {6}, Max dropdown: {7}, Max dropdown length: {8},\n" +
-			                     "Profit average: {9}, Loss average: {10}, Long good: {11}, short good: {12}", 
-								GoodCount, BadCount, Profit, Volume, (100.0*Profit / Volume).ToEnString(3), 
-								MaxLoss, MaxProfit, MaxDropdown.ToEnString(2), MaxDropdownLength,
-								ProfitAverage.ToEnString(2), LossAverage.ToEnString(2), LongGoodCount, ShortGoodCount);
+			return
+				$"Good: {GoodCount}, Bad: {BadCount}, Profit: {Profit}, Volume: {Volume}, Profit percent: {(100.0*Profit/Volume).ToEnString(3)},\n" +
+				$"Max loss: {MaxLoss}, Max profit: {MaxProfit}, Max dropdown: {MaxDropdown.ToEnString(2)}, Max dropdown length: {MaxDropdownLength},\n" +
+				$"Profit average: {ProfitAverage.ToEnString(2)}, Loss average: {LossAverage.ToEnString(2)}, Long good: {LongGoodCount}, short good: {ShortGoodCount}";
 		}
 
 		private void AddTrade(Trade trade)
@@ -150,7 +138,20 @@ namespace Tests.Tools
 			AddTrade(new Trade(profit, prevDeal.IsBuy, deal.DateTime - prevDeal.DateTime));
 		}
 
-	#region Unused
+		public List<int> GetDepositSizes()
+		{
+			int sum = startDepoSize;
+			var depo = new List<int>{sum};
+			foreach (var trade in trades)
+			{
+				sum += trade.Profit;
+				depo.Add(sum);
+			}
+			return depo;
+		}
+
+		#region Unused
+
 		public void PrintDeals()
 		{
 			for (int i = 0; i < trades.Count; ++i)
@@ -164,18 +165,6 @@ namespace Tests.Tools
 			File.WriteAllLines(filename, trades.ConvertAll(d => d.Profit.ToString()));
 		}
 
-		public void PrintDepo(string filename)
-		{
-			var depo = new List<int>{0};
-			int sum = 0;
-			foreach (var deal in trades)
-			{
-				sum += deal.Profit;
-				depo.Add(sum);
-			}
-			File.WriteAllLines(filename, depo.ConvertAll(d => d.ToString()));
-		}
-
-	#endregion
+		#endregion
 	}
 }

@@ -38,19 +38,19 @@ namespace ADTrader
 			return int.Parse(localDbData.Substring(0, localDbData.IndexOf('|')));
 		}
 
-		public int SendOrder(bool isTrendLong, double price, int count = 1)
+		public int SendOrder(bool trendIsLong, double price, int count = 1)
 		{
 			var endDate = DateTime.Now.AddMinutes(1);
-			string type = isTrendLong ? "B" : "S";
+			string type = trendIsLong ? "B" : "S";
 
 			return alfaDirect.CreateLimitOrder(account, placeCode, pCode, endDate, "", "RUR", type, count, price,
 				null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, -1);
 		}
 
-		public int SendStopOrder(bool isTrendLong, double stopPrice, int count = 1)
+		public int SendStopOrder(bool trendIsLong, double stopPrice, int count = 1)
 		{
 			var endDate = DateTime.Now.AddDays(1);
-			string type = isTrendLong ? "S" : "B";
+			string type = trendIsLong ? "S" : "B";
 
 			return alfaDirect.CreateStopOrder(account, placeCode, pCode, endDate, "", "RUR", type, count, stopPrice, 1000, null, 10);
 		}

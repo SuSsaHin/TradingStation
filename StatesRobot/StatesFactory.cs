@@ -3,6 +3,7 @@ using StatesRobot.States;
 using StatesRobot.States.End;
 using StatesRobot.States.Search;
 using StatesRobot.States.Trade;
+using TradeTools;
 
 namespace StatesRobot
 {
@@ -15,23 +16,23 @@ namespace StatesRobot
 			Trailing
 		}
 
-		public TradeStateTypes TradeStateType { get; private set; }
+		public TradeStateTypes TradeStateType { get; }
 
 		public StatesFactory(TradeStateTypes tradeStateType)
 		{
-			this.TradeStateType = tradeStateType;
+			TradeStateType = tradeStateType;
 		}
 
-		public IState GetTradeState(int startPrice, bool isTrendLong, RobotContext context)
+		public IState GetTradeState(RobotContext context, Deal deal)
 		{
 			switch (TradeStateType)
 			{
 				case TradeStateTypes.Basic:
-					return new BasicTradeState(startPrice, isTrendLong);
+					return new BasicTradeState(context, deal);
 				case TradeStateTypes.Breakeven:
-					return new BreakevenTradeState(startPrice, isTrendLong);
+					return new BreakevenTradeState(context, deal);
 				case TradeStateTypes.Trailing:
-					return new DynamicTradeState(startPrice, isTrendLong);
+					return new TrailingTradeState(context, deal);
 				default:
 					throw new ArgumentException("Not expected trade state type");
 			}

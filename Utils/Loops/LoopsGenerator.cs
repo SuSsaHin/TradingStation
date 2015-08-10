@@ -7,6 +7,17 @@ namespace Utils.Loops
 	{
 		private Func<Action<TFieldsContainer>, Action<TFieldsContainer>> loop = action => action;
 		private readonly XmlToFieldsMapper<TFieldsContainer> xmlMapper = new XmlToFieldsMapper<TFieldsContainer>();	//TODO static?
+		private readonly TFieldsContainer container;
+
+		public LoopsGenerator()
+		{
+			container = new TFieldsContainer();
+		} 
+
+		public LoopsGenerator(TFieldsContainer container)
+		{
+			this.container = container;
+		}
 
 		public void AppendLoop(string fieldName, object loopStart, object loopEnd, object loopStep)
 		{
@@ -16,20 +27,20 @@ namespace Utils.Loops
 
 			var fieldInfo = xmlMapper.GetFieldInfo(name);
 
-			var start = fieldInfo.FieldType.DynamicCast(loopStart);
-			var step = fieldInfo.FieldType.DynamicCast(loopStep);
-			var end = fieldInfo.FieldType.DynamicCast(loopEnd);
+			var start = fieldInfo.PropertyType.DynamicCast(loopStart);
+			var step = fieldInfo.PropertyType.DynamicCast(loopStep);
+			var end = fieldInfo.PropertyType.DynamicCast(loopEnd);
 
 			var oldLoop = loop;
 			
 			loop = action =>
 			{
-				return tp =>
+				return fieldsContainer =>
 				{
 					for (var i = start; i < end; i += step)
 					{
-						fieldInfo.SetValue(tp, i);
-						oldLoop(action)(tp);
+						fieldInfo.SetValue(fieldsContainer, i);
+						oldLoop(action)(fieldsContainer);
 					}
 				};
 			};
@@ -42,20 +53,19 @@ namespace Utils.Loops
 
 			var oldLoop = loop;
 
-			var fieldInfo = xmlMapper.GetFieldInfo(fieldName);
 			loop = action =>
 			{
-				return tp =>
+				return fieldsContainer =>
 				{
-					fieldInfo.SetValue(tp, fieldInfo.FieldType.DynamicCast(value));
-					oldLoop(action)(tp);
+					xmlMapper.SetValue(fieldName, fieldsContainer, value);
+					oldLoop(action)(fieldsContainer);
 				};
 			};
 		}
 
 		public void Execute(Action<TFieldsContainer> action)
 		{
-			loop(action)(new TFieldsContainer());
+			loop(action)(container);
 		}
 	}
 }

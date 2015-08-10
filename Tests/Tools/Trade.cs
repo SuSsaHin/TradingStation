@@ -2,18 +2,18 @@
 
 namespace Tests.Tools
 {
-	class Trade
+	internal class Trade
 	{
-		public Trade(int profit, bool isTrendLong, TimeSpan duration)
+		public Trade(int profit, bool isLong, TimeSpan duration)
 		{
 			Profit = profit;
-			IsTrendLong = isTrendLong;
+			IsLong = isLong;
 			Duration = duration;
 		}
 
-		public int Profit { get; private set; }
+		public int Profit { get; }
 		public TimeSpan Duration { get; private set; }
-		public bool IsTrendLong { get; private set; }
-		public bool IsGood { get { return Profit > 0; } }
+		public bool IsLong { get; private set; }
+		public bool IsGood => Profit > 0;
 	}
 }

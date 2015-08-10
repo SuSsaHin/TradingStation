@@ -4,6 +4,7 @@ using NUnit.Framework;
 using StatesRobot;
 using Tests.Tools;
 using TradeTools.Events;
+using Assert = NUnit.Framework.Assert;
 
 namespace Tests
 {
@@ -20,15 +21,23 @@ namespace Tests
 			{
 				foreach (var candle in day.FiveMins)
 				{
-					var dealEvent = robot.Process(candle) as DealEvent;	//TODO Test advisor candles adding
+					var dealEvent = robot.Process(candle) as DealEvent;
 					if (dealEvent != null)
 					{
 						results.AddDeal(dealEvent.Deal);
 					}
 				}
-				robot.ClearHistory();
-			}
+				var ev = robot.StopTrading() as DealEvent;
+				if (ev != null)
+				{
+					results.AddDeal(ev.Deal);
+				}
 
+				printer.PrintDepoWithParamsName(tradeParams, results);
+
+				Assert.That(results.DealsAreClosed);
+				robot.Reset();
+			}
 			printer.AddRow(tradeParams, results);
 		}
 		[TestCase("Configs/main.xml")]
