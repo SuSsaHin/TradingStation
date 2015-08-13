@@ -32,12 +32,12 @@ namespace Tests
 				{
 					results.AddDeal(ev.Deal);
 				}
-
-				printer.PrintDepoWithParamsName(tradeParams, results);
+				//printer.PrintDepoWithParamsName(tradeParams, results);
 
 				Assert.That(results.DealsAreClosed);
 				robot.Reset();
 			}
+
 			printer.AddRow(tradeParams, results);
 		}
 		[TestCase("Configs/main.xml")]

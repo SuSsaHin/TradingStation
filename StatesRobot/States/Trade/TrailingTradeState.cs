@@ -15,11 +15,23 @@ namespace StatesRobot.States.Trade
 			if (result != null)
 				return result;
 
-			if (TrendIsLong && candle.High - context.StopLossPrice >= context.TrailingStopLoss ||
-				!TrendIsLong && candle.Low + context.TrailingStopLoss <= context.TrailingStopLoss)
+			if (TrendIsLong)
 			{
-				context.StopLossPrice = GetStopPrice(TrendIsLong ? candle.High : candle.Low, context.TrailingStopLoss);
-				return new StopLossMovingEvent(context.StopLossPrice, TrendIsLong);
+				if (candle.High - context.StopLossPrice >= context.TrailingStopLoss)
+				{
+					var newPrice = GetStopPrice(candle.High, context.TrailingStopLoss);
+					if (newPrice > context.StopLossPrice)
+						return new StopLossMovingEvent(context.StopLossPrice, TrendIsLong);
+				}
+			}
+			else 
+			{
+				if (context.StopLossPrice - candle.Low >= context.TrailingStopLoss)
+				{
+					var newPrice = GetStopPrice(candle.Low, context.TrailingStopLoss);
+					if (newPrice < context.StopLossPrice)
+						return new StopLossMovingEvent(context.StopLossPrice, TrendIsLong);
+				}
 			}
 			
 			return null;

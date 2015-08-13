@@ -9,7 +9,7 @@
 			<StopLoss Start="600" End="1400" Step="200"/>
 			<BreakevenPercent Start="0.2" End="1.2" Step="0.2"/>
 			<TrailingStopPercent Start="0.8" End="1.8" Step="0.2" />
-			<MaxSkippedCount Size="2" />
+			<MaxSkippedCount Size="200" />
 		</Params>
 	</Test>
 </Tests>

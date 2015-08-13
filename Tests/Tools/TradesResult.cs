@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MathNet.Numerics.Distributions;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -32,8 +33,13 @@ namespace Tests.Tools
 		[PropName("Profit")]
 		public int Profit => trades.Sum(d => d.Profit);
 
+		[PropName("ProfitMean")]
+		public double ProfitMean => trades.Average(d => d.Profit);
+
+		[PropName("DealsCount")]
 		public int DealsCount => trades.Count;
 
+		[PropName("GoodCount")]
 		public int GoodCount => trades.Count(d => d.IsGood);
 
 		public int BadCount => trades.Count(d => !d.IsGood);
@@ -58,7 +64,8 @@ namespace Tests.Tools
 			}
 		}
 
-		public double ProfitAverage
+		[PropName("GoodDealsAverage")]
+		public double GoodDealsAverage
 		{
 			get
 			{
@@ -82,6 +89,8 @@ namespace Tests.Tools
 
 		public bool DealsAreClosed => !deals.Any();
 
+		[PropName("IsSignificant")]
+		public bool IsStatisticalSignificant => IsProfitStatisticallySignificant(0.95);
 		public static List<string> GetHeaders() //TODO FieldNames
 	    {
             return new List<string>{"Good", "Bad", "Profit", "Volume", "Profit percent", 
@@ -94,7 +103,7 @@ namespace Tests.Tools
 	    {
             return new List<string>{GoodCount.ToString(), BadCount.ToString(), Profit.ToString(), Volume.ToString(), (100.0*Profit / Volume).ToEnString(3), 
 								MaxLoss.ToString(), MaxProfit.ToString(), MaxDropdown.ToEnString(2), MaxDropdownLength.ToString(),
-								ProfitAverage.ToEnString(2), LossAverage.ToEnString(2), 
+								GoodDealsAverage.ToEnString(2), LossAverage.ToEnString(2), 
                                 LongGoodCount.ToString(), ShortGoodCount.ToString()};
 	    }
 
@@ -103,7 +112,7 @@ namespace Tests.Tools
 			return
 				$"Good: {GoodCount}, Bad: {BadCount}, Profit: {Profit}, Volume: {Volume}, Profit percent: {(100.0*Profit/Volume).ToEnString(3)},\n" +
 				$"Max loss: {MaxLoss}, Max profit: {MaxProfit}, Max dropdown: {MaxDropdown.ToEnString(2)}, Max dropdown length: {MaxDropdownLength},\n" +
-				$"Profit average: {ProfitAverage.ToEnString(2)}, Loss average: {LossAverage.ToEnString(2)}, Long good: {LongGoodCount}, short good: {ShortGoodCount}";
+				$"Profit average: {GoodDealsAverage.ToEnString(2)}, Loss average: {LossAverage.ToEnString(2)}, Long good: {LongGoodCount}, short good: {ShortGoodCount}";
 		}
 
 		private void AddTrade(Trade trade)
@@ -132,7 +141,6 @@ namespace Tests.Tools
 				deals.Push(deal);
 				return;
 			}
-
 			var prevDeal = deals.Pop();
 			var profit = (deal.Price - prevDeal.Price)*(prevDeal.IsBuy ? 1 : -1) - Comission;
 			AddTrade(new Trade(profit, prevDeal.IsBuy, deal.DateTime - prevDeal.DateTime));
@@ -148,6 +156,15 @@ namespace Tests.Tools
 				depo.Add(sum);
 			}
 			return depo;
+		}
+
+		public bool IsProfitStatisticallySignificant(double probabilityLevel)
+		{
+			var standardDeviation = Statistics.StandardDeviation(Trades.Select(t => t.Profit).ToList());
+			//var quantile = StudentT.InvCDF(0, standardDeviation, Trades.Count - 1, (1 - probabilityLevel)/2);	//Don't realise in Math.NET
+			var quantile = Normal.InvCDF(0, standardDeviation, (1 - probabilityLevel)/2);
+
+			return ProfitMean > Math.Abs(quantile);
 		}
 
 		#region Unused
