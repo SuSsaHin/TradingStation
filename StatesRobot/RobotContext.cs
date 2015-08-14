@@ -20,8 +20,6 @@ namespace StatesRobot
 
 		internal IReadOnlyList<Candle> Candles => candles;
 
-		internal uint MaxSkippedCandlesCount { get; private set; }
-
 		internal IState CurrentState { get; set; }
 
 		public RobotContext(TradeParams tradeParams, StatesFactory factory, TradeAdvisor advisor, List<Candle> history = null)
@@ -35,7 +33,6 @@ namespace StatesRobot
 			BreakevenSize = (int) (StopLossSize * tradeParams.BreakevenPercent);
 			PegtopSize = tradeParams.PegtopSize;
 			EndTime = tradeParams.EndTime;
-			MaxSkippedCandlesCount = tradeParams.MaxSkippedCandlesCount;
 
 			InitState();
 		}

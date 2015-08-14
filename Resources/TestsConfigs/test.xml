@@ -9,7 +9,6 @@
 			<StopLoss Size="1000"/>
 			<BreakevenPercent Size="0.4"/>
 			<TrailingStopPercent Size="0.8" />
-			<MaxSkippedCount Size="2000" />
       <EndTime Size="PT23H59M"/>
 		</Params>
 	</Test>

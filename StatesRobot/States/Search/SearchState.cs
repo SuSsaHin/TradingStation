@@ -13,7 +13,6 @@ namespace StatesRobot.States.Search
 	{
 		private readonly ExtremumsRepository extremumsRepo;
 		private readonly LinkedList<CandleNode> searchTree;
-		private readonly uint maxSkippedCandlesCount;
 		private readonly int pegTopSize;
 
 		public SearchState(RobotContext context)
@@ -25,7 +24,7 @@ namespace StatesRobot.States.Search
 			{
 				AppendToTree(context.Candles[i], i);
 			}
-			maxSkippedCandlesCount = context.MaxSkippedCandlesCount;
+
 			pegTopSize = context.PegtopSize;
 		}
 
@@ -59,15 +58,9 @@ namespace StatesRobot.States.Search
 			Extremum lastSecondExtremum = null;
 			while (leftIter != null)
 			{
-				if (TryRemoveUnusefull(ref leftIter, currentIndex))
-					continue;
-
 				var midIter = leftIter.Value.Children.First;
 				while (midIter != null)
 				{
-					if (TryRemoveUnusefull(ref midIter, currentIndex))
-						continue;
-
 					if (IsSkipped(midIter.Value.Candle, candle))
 					{
 						midIter = midIter.Next;
@@ -105,15 +98,6 @@ namespace StatesRobot.States.Search
 
 			searchTree.AddLast(new CandleNode(candle, currentIndex));
 			return lastSecondExtremum;
-		}
-
-		private bool TryRemoveUnusefull(ref LinkedListNode<CandleNode> node, int currentIndex)
-		{
-			if (node.Value.HasChildren() || currentIndex - node.Value.CandleIndex <= maxSkippedCandlesCount)
-				return false;
-
-			node = node.RemoveFromList();
-			return true;
 		}
 
 		private bool NeedToTrade(RobotContext context, Extremum secondExtremum)

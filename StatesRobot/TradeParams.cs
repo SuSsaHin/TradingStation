@@ -27,9 +27,6 @@ namespace StatesRobot
 		[PropName("EndTime")]
 		public TimeSpan EndTime { get; set; }
 
-		[PropName("MaxSkippedCount")]
-		public uint MaxSkippedCandlesCount { get; set; }
-
 		public void Validate()
 		{
 			if (StopLoss <= 0)
