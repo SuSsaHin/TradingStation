@@ -37,7 +37,7 @@ namespace Utils.Loops
 			{
 				return fieldsContainer =>
 				{
-					for (var i = start; i < end; i += step)
+					for (var i = start; i <= end; i += step)
 					{
 						fieldInfo.SetValue(fieldsContainer, i);
 						oldLoop(action)(fieldsContainer);

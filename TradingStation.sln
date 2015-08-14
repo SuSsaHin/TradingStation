@@ -18,6 +18,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Resources\TestsConfigs\default.xml = Resources\TestsConfigs\default.xml
 		Descroption.txt = Descroption.txt
 		Resources\TestsConfigs\main.xml = Resources\TestsConfigs\main.xml
+		Resources\TestsConfigs\test.xml = Resources\TestsConfigs\test.xml
 	EndProjectSection
 EndProject
 Global

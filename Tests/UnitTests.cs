@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Reflection;
-using System.Runtime.InteropServices.ComTypes;
 using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using StatesRobot.States.Search.Tools;
@@ -9,7 +7,6 @@ using TradeTools;
 using TradeTools.Events;
 using Utils;
 using Utils.Events;
-using Wintellect.PowerCollections;
 using Assert = NUnit.Framework.Assert;
 
 namespace Tests

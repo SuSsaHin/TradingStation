@@ -41,6 +41,7 @@ namespace Tests
 			printer.AddRow(tradeParams, results);
 		}
 		[TestCase("Configs/main.xml")]
+		[TestCase("Configs/test.xml")]
 		public void MainTest(string filename)
 		{
 			var configurator = new Configurator(filename);

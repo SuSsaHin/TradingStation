@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using StatesRobot.States.Search.Tools;
 using TradeTools;
@@ -6,13 +7,14 @@ using TradeTools.Events;
 using Utils;
 using Utils.Events;
 
-namespace StatesRobot.States.Search	//TODO !!документация
+namespace StatesRobot.States.Search
 {
 	class SearchState : IState
 	{
 		private readonly ExtremumsRepository extremumsRepo;
 		private readonly LinkedList<CandleNode> searchTree;
 		private readonly int maxSkippedCandlesCount;
+		private readonly int pegTopSize;
 
 		public SearchState(RobotContext context)
 		{
@@ -24,6 +26,7 @@ namespace StatesRobot.States.Search	//TODO !!документация
 				AppendToTree(context.Candles[i], i);
 			}
 			maxSkippedCandlesCount = context.MaxSkippedCandlesCount;
+			pegTopSize = context.PegtopSize;
 		}
 
 		public ITradeEvent StopTrading(RobotContext context)
@@ -66,6 +69,12 @@ namespace StatesRobot.States.Search	//TODO !!документация
 						continue;
 
 					if (IsSkipped(midIter.Value.Candle, candle))
+					{
+						midIter = midIter.Next;
+						continue;
+					}
+
+					if (IsPegTop(leftIter.Value.Candle) && IsPegTop(midIter.Value.Candle) && IsPegTop(candle))
 					{
 						midIter = midIter.Next;
 						continue;
@@ -139,6 +148,11 @@ namespace StatesRobot.States.Search	//TODO !!документация
 		private bool IsTrendLong(IReadOnlyList<Candle> candles)
 		{
 			return candles[candles.Count - 1].Close > candles.First().Open;
+		}
+
+		private bool IsPegTop(Candle candle)
+		{
+			return Math.Abs(candle.Open - candle.Close) <= pegTopSize;
 		}
 	}
 }
