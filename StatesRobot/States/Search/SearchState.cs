@@ -13,7 +13,7 @@ namespace StatesRobot.States.Search
 	{
 		private readonly ExtremumsRepository extremumsRepo;
 		private readonly LinkedList<CandleNode> searchTree;
-		private readonly int maxSkippedCandlesCount;
+		private readonly uint maxSkippedCandlesCount;
 		private readonly int pegTopSize;
 
 		public SearchState(RobotContext context)

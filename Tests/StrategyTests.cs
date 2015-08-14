@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using StatesRobot;
@@ -13,10 +14,13 @@ namespace Tests
 	{
 		private void RunTest(TradeParams tradeParams, StatesFactory statesFactory, HistoryRepository repository, TradesPrinter printer)
 		{
+			tradeParams.Validate();
+
 			var advisor = new TradeAdvisor(repository.Days.First().FiveMins);
 			var robot = new RobotContext(tradeParams, statesFactory, advisor);
 			var results = new TradesResult();
 
+			//foreach (var day in repository.Days)
 			foreach (var day in repository.Days.Skip(1))
 			{
 				foreach (var candle in day.FiveMins)
@@ -38,6 +42,7 @@ namespace Tests
 				robot.Reset();
 			}
 
+			//File.WriteAllLines("out.txt", results.GetDepositSizes().Select(s => (s - 30000).ToString()));
 			printer.AddRow(tradeParams, results);
 		}
 		[TestCase("Configs/main.xml")]

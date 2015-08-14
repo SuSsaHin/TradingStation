@@ -25,8 +25,8 @@ namespace Tests.Tools
 		public const int Comission = 30;
 		public IReadOnlyList<Trade> Trades => trades;
 
-		[PropName("MaxDropdown")]
-		public double MaxDropdown { get; private set; }
+		[PropName("MaxDropdownPercent")]
+		public double MaxDropdownPercent { get; private set; }
 
 		[PropName("MaxDropdownLength")]
 		public int MaxDropdownLength { get; private set; }
@@ -105,7 +105,7 @@ namespace Tests.Tools
 	    public List<string> GetTableRow()
 	    {
             return new List<string>{GoodCount.ToString(), BadCount.ToString(), Profit.ToString(), Volume.ToString(), (100.0*Profit / Volume).ToEnString(), 
-								MaxLoss.ToString(), MaxProfit.ToString(), MaxDropdown.ToEnString(2), MaxDropdownLength.ToString(),
+								MaxLoss.ToString(), MaxProfit.ToString(), MaxDropdownPercent.ToEnString(2), MaxDropdownLength.ToString(),
 								GoodDealsAverage.ToEnString(2), LossAverage.ToEnString(2), 
                                 LongGoodCount.ToString(), ShortGoodCount.ToString()};
 	    }
@@ -114,7 +114,7 @@ namespace Tests.Tools
 		{
 			return
 				$"Good: {GoodCount}, Bad: {BadCount}, Profit: {Profit}, Volume: {Volume}, Profit percent: {(100.0*Profit/Volume).ToEnString()},\n" +
-				$"Max loss: {MaxLoss}, Max profit: {MaxProfit}, Max dropdown: {MaxDropdown.ToEnString(2)}, Max dropdown length: {MaxDropdownLength},\n" +
+				$"Max loss: {MaxLoss}, Max profit: {MaxProfit}, Max dropdown: {MaxDropdownPercent.ToEnString(2)}, Max dropdown length: {MaxDropdownLength},\n" +
 				$"Profit average: {GoodDealsAverage.ToEnString(2)}, Loss average: {LossAverage.ToEnString(2)}, Long good: {LongGoodCount}, short good: {ShortGoodCount}";
 		}
 
@@ -132,7 +132,7 @@ namespace Tests.Tools
 			{
 				double currentDropdown = 100 * (maxDepoSize - depoSize) / (double)(maxDepoSize);
 				int currentDropdownLength = trades.Count - 1 - globalMaximumIndex;
-				MaxDropdown = Math.Max(currentDropdown, MaxDropdown);
+				MaxDropdownPercent = Math.Max(currentDropdown, MaxDropdownPercent);
 				MaxDropdownLength = Math.Max(currentDropdownLength, MaxDropdownLength);
 			}
 		}

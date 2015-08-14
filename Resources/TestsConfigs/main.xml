@@ -6,10 +6,9 @@
 			<Stop>trailing</Stop>
 		</Types>
 		<Params>
-			<StopLoss Start="800" End="1400" Step="200"/>
-			<BreakevenPercent Start="0.2" End="1.2" Step="0.2"/>
-			<TrailingStopPercent Start="0.8" End="1.8" Step="0.2" />
-			<MaxSkippedCount Size="2" />
+			<StopLoss Start="600" End="1400" Step="200"/>
+			<TrailingStopPercent Start="1.2" End="2.2" Step="0.2" />
+			<MaxSkippedCount Start="2" End="12" Step="2"/>
 		</Params>
 	</Test>
 </Tests>

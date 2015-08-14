@@ -20,7 +20,7 @@ namespace StatesRobot
 
 		internal IReadOnlyList<Candle> Candles => candles;
 
-		internal int MaxSkippedCandlesCount { get; private set; }
+		internal uint MaxSkippedCandlesCount { get; private set; }
 
 		internal IState CurrentState { get; set; }
 
