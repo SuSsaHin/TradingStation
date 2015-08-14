@@ -44,7 +44,7 @@ namespace StatesRobot.States.Search
 
 			if (NeedToTrade(context, bestSecondExtremum))
 			{
-				var deal = new Deal(candle.Close, candle.DateTime, bestSecondExtremum.IsMinimum);
+				var deal = new Deal(candle.Close, candle.DateTime, bestSecondExtremum.IsMinimum, context.Advisor.GetAdvice(candle.Close, bestSecondExtremum.IsMinimum));
 				context.CurrentState = context.Factory.GetTradeState(context, deal);
 				return new DealEvent(deal);
 			}
@@ -80,12 +80,13 @@ namespace StatesRobot.States.Search
 						goto NextIteration;
 					}
 
-					midIter = midIter.RemoveFromList();
 					var secondExtremum = extremumsRepo.AddExtremum(extremum);
 					if (secondExtremum != null && (lastSecondExtremum == null || lastSecondExtremum.DateTime < secondExtremum.DateTime))
 					{
 						lastSecondExtremum = secondExtremum;
 					}
+
+					midIter = midIter.RemoveFromList();
 				}
 
 				if (!IsSkipped(leftIter.Value.Candle, candle))

@@ -146,7 +146,7 @@ namespace Tests.Tools
 			}
 			var prevDeal = deals.Pop();
 			var profit = (deal.Price - prevDeal.Price)*(prevDeal.IsBuy ? 1 : -1) - Comission;
-			AddTrade(new Trade(profit, prevDeal.IsBuy, deal.DateTime - prevDeal.DateTime));
+			AddTrade(new Trade(profit, prevDeal.IsBuy, deal.DateTime - prevDeal.DateTime, prevDeal.Advice));
 		}
 
 		public List<int> GetDepositSizes()
