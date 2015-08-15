@@ -6,7 +6,7 @@ using MathNet.Numerics.Distributions;
 using MathNet.Numerics.Statistics;
 using TradeTools;
 using Utils;
-using Utils.XmlProcessing;
+using Utils.FieldsMapping;
 
 namespace Tests.Tools
 {
@@ -25,29 +25,22 @@ namespace Tests.Tools
 		public const int Comission = 30;
 		public IReadOnlyList<Trade> Trades => trades;
 
-		[PropName("MaxDropdownPercent")]
 		public double MaxDropdownPercent { get; private set; }
 
-		[PropName("MaxDropdownLength")]
 		public int MaxDropdownLength { get; private set; }
 
-		[PropName("Profit")]
 		public int Profit => trades.Sum(d => d.Profit);
 
-		[PropName("ProfitMean")]
 		public double ProfitMean => trades.Average(d => d.Profit);
 
-		[PropName("DealsCount")]
 		public int DealsCount => trades.Count;
 
-		[PropName("GoodCount")]
 		public int GoodCount => trades.Count(d => d.IsGood);
 
 		public int BadCount => trades.Count(d => !d.IsGood);
 
 		public int Volume => trades.Sum(deal => Math.Abs(deal.Profit));
 
-		[PropName("MaxLoss")]
 		public int MaxLoss
 		{
 			get
@@ -66,7 +59,6 @@ namespace Tests.Tools
 			}
 		}
 
-		[PropName("GoodDealsAverage")]
 		public double GoodDealsAverage
 		{
 			get
@@ -91,32 +83,7 @@ namespace Tests.Tools
 
 		public bool DealsAreClosed => !deals.Any();
 
-		[PropName("ProbabilityLevel")]
 		public double ProbabilityLevel => Math.Round(GetProbabilityLevel(), 1);
-
-		public static List<string> GetHeaders() //TODO FieldNames
-	    {
-            return new List<string>{"Good", "Bad", "Profit", "Volume", "Profit percent", 
-                                    "Max loss", "Max profit", "Max dropdown", "Max dropdown length", 
-                                    "Profit average", "Loss average", 
-                                    "Long good", "Short good"};
-	    }
-
-	    public List<string> GetTableRow()
-	    {
-            return new List<string>{GoodCount.ToString(), BadCount.ToString(), Profit.ToString(), Volume.ToString(), (100.0*Profit / Volume).ToEnString(), 
-								MaxLoss.ToString(), MaxProfit.ToString(), MaxDropdownPercent.ToEnString(2), MaxDropdownLength.ToString(),
-								GoodDealsAverage.ToEnString(2), LossAverage.ToEnString(2), 
-                                LongGoodCount.ToString(), ShortGoodCount.ToString()};
-	    }
-
-		public override string ToString()
-		{
-			return
-				$"Good: {GoodCount}, Bad: {BadCount}, Profit: {Profit}, Volume: {Volume}, Profit percent: {(100.0*Profit/Volume).ToEnString()},\n" +
-				$"Max loss: {MaxLoss}, Max profit: {MaxProfit}, Max dropdown: {MaxDropdownPercent.ToEnString(2)}, Max dropdown length: {MaxDropdownLength},\n" +
-				$"Profit average: {GoodDealsAverage.ToEnString(2)}, Loss average: {LossAverage.ToEnString(2)}, Long good: {LongGoodCount}, short good: {ShortGoodCount}";
-		}
 
 		private void AddTrade(Trade trade)
 		{
@@ -166,7 +133,7 @@ namespace Tests.Tools
 			var standardDeviation = Trades.Select(t => (double)t.Profit).StandardDeviation();
 			var meansStdDev = standardDeviation / Math.Sqrt(Trades.Count);
 
-			var cdf = Normal.CDF(0, meansStdDev, ProfitMean);
+			var cdf = StudentT.CDF(0, meansStdDev, Trades.Count - 1, ProfitMean);
 			return 1 - Math.Min(1 - cdf, cdf)*2;
 		}
 

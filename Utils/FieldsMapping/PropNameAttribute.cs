@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Utils.XmlProcessing
+namespace Utils.FieldsMapping
 {
 	[AttributeUsage(AttributeTargets.Property)]
 	public class PropNameAttribute : Attribute

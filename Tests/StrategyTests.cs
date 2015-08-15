@@ -1,9 +1,10 @@
-﻿using System.IO;
-using System.Linq;
+﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using StatesRobot;
 using Tests.Tools;
+using Tests.Tools.History;
+using Tests.Tools.Printing;
 using TradeTools.Events;
 using Assert = NUnit.Framework.Assert;
 
@@ -54,7 +55,7 @@ namespace Tests
 			var printer = configurator.Printer;
 
 			configurator.Executor.Execute(tp => RunTest(tp, configurator.Factory, repository, printer));
-			printer.Print("MainTest.xlsx");
+			printer.PrintTable("MainTest");
 		}
 	}
 }

@@ -1,15 +1,17 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 
-namespace Utils.XmlProcessing
+namespace Utils.FieldsMapping
 {
-	public class XmlToFieldsMapper<T>
+	[SuppressMessage("ReSharper", "StaticMemberInGenericType")]
+	public static class XmlToFieldsMapper<T>
 	{
-		private readonly Dictionary<string, PropertyInfo> properties;
-		public readonly IReadOnlyList<string> FieldNames; 
+		private readonly static Dictionary<string, PropertyInfo> properties;
+		public static IReadOnlyList<string> FieldNames { get; }
 
-		public XmlToFieldsMapper()
+		static XmlToFieldsMapper()
 		{
 			properties = new Dictionary<string, PropertyInfo>();
 
@@ -25,25 +27,25 @@ namespace Utils.XmlProcessing
 					.ToList();
 		}
 
-		public PropertyInfo GetFieldInfo(string name)
+		public static PropertyInfo GetFieldInfo(string name)
 		{
 			return properties[name.ToLower()];
 		}
 
-		public object GetValue(string fieldName, T obj)
+		public static object GetValue(string fieldName, T obj)
 		{
 			return GetFieldInfo(fieldName).GetValue(obj);
 		}
 
-		public void SetValue(string fieldName, T obj, object value)
+		public static void SetValue(string fieldName, T obj, object value)
 		{
 			var fieldInfo = GetFieldInfo(fieldName);
 			fieldInfo.SetValue(obj, fieldInfo.PropertyType.DynamicCast(value));
 		}
 
-		public bool ContainsField(string name)
+		public static bool HasField(string fieldName)
 		{
-			return properties.ContainsKey(name.ToLower());
+			return properties.ContainsKey(fieldName.ToLower());
 		}
 	}
 }

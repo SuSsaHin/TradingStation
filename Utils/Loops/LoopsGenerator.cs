@@ -1,20 +1,20 @@
 ﻿using System;
-using Utils.XmlProcessing;
+using Utils.FieldsMapping;
 
 namespace Utils.Loops
 {
-	public class LoopsGenerator<TFieldsContainer> : IExecutor<TFieldsContainer> where TFieldsContainer : new()
+	public class LoopsGenerator<T> : IExecutor<T> where T : new()
 	{
-		private Func<Action<TFieldsContainer>, Action<TFieldsContainer>> loop = action => action;
-		private readonly XmlToFieldsMapper<TFieldsContainer> xmlMapper = new XmlToFieldsMapper<TFieldsContainer>();	//TODO static?
-		private readonly TFieldsContainer container;
+		
+		private Func<Action<T>, Action<T>> loop = action => action;
+		private readonly T container;
 
 		public LoopsGenerator()
 		{
-			container = new TFieldsContainer();
+			container = new T();
 		} 
 
-		public LoopsGenerator(TFieldsContainer container)
+		public LoopsGenerator(T container)
 		{
 			this.container = container;
 		}
@@ -22,10 +22,10 @@ namespace Utils.Loops
 		public void AppendLoop(string fieldName, object loopStart, object loopEnd, object loopStep)
 		{
 			var name = fieldName.ToLower();
-			if (!xmlMapper.ContainsField(name))
+			if (!XmlToFieldsMapper<T>.HasField(name))
 				throw new MissingFieldException("Can't loop field " + fieldName);
 
-			var fieldInfo = xmlMapper.GetFieldInfo(name);
+			var fieldInfo = XmlToFieldsMapper<T>.GetFieldInfo(name);
 
 			var start = fieldInfo.PropertyType.DynamicCast(loopStart);
 			var step = fieldInfo.PropertyType.DynamicCast(loopStep);
@@ -48,7 +48,7 @@ namespace Utils.Loops
 
 		public void AppendValue(string fieldName, object value)
 		{
-			if (!xmlMapper.ContainsField(fieldName))
+			if (!XmlToFieldsMapper<T>.HasField(fieldName))
 				throw new MissingFieldException("Can't find loop field " + fieldName);
 
 			var oldLoop = loop;
@@ -57,13 +57,13 @@ namespace Utils.Loops
 			{
 				return fieldsContainer =>
 				{
-					xmlMapper.SetValue(fieldName, fieldsContainer, value);
+					XmlToFieldsMapper<T>.SetValue(fieldName, fieldsContainer, value);
 					oldLoop(action)(fieldsContainer);
 				};
 			};
 		}
 
-		public void Execute(Action<TFieldsContainer> action)
+		public void Execute(Action<T> action)
 		{
 			loop(action)(container);
 		}

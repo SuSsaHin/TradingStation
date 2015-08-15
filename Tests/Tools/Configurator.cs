@@ -5,9 +5,13 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using StatesRobot;
+using Tests.Tools.History;
+using Tests.Tools.Printing;
+using Tests.Tools.Printing.Mappers;
 using Utils.Loops;
 using Utils.TableWriter;
-using Utils.XmlProcessing;
+
+using TradeParamsMapper = Utils.FieldsMapping.XmlToFieldsMapper<StatesRobot.TradeParams>;
 
 namespace Tests.Tools
 {
@@ -43,7 +47,7 @@ namespace Tests.Tools
 		private void InitTradesPrinter(XElement parmeters)
 		{
 			var paramsFieldNames = parmeters.Descendants().Select(el => el.Name.LocalName).ToList();
-			var resultsFieldNames = (new XmlToFieldsMapper<TradesResult>()).FieldNames;
+			var resultsFieldNames = TradeResultsFieldsMapper.FieldNames;
 			Printer = new TradesPrinter(new ExcelWriter(), paramsFieldNames, resultsFieldNames, workingDirectory, printsDir);
 		}
 
@@ -110,15 +114,14 @@ namespace Tests.Tools
 
 		private TradeParams GetDefaultTradeParams(XElement paramsNode)
 		{
-			var mapper = new XmlToFieldsMapper<TradeParams>();
 			var tradeParams = new TradeParams();
 			foreach (var param in paramsNode.Descendants())
 			{
 				var name = param.Name.LocalName;
-				if (!mapper.ContainsField(name))
+				if (!TradeParamsMapper.HasField(name))
 					throw new SettingsPropertyNotFoundException($"Can't found property {name}");
 
-				mapper.SetValue(name, tradeParams, param.Attribute("Size"));
+				TradeParamsMapper.SetValue(name, tradeParams, param.Attribute("Size"));
 			}
 			return tradeParams;
 		}

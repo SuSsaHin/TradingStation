@@ -1,5 +1,5 @@
 ﻿using System;
-using Utils.XmlProcessing;
+using Utils.FieldsMapping;
 
 namespace StatesRobot
 {
