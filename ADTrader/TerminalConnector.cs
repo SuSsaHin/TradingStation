@@ -8,31 +8,40 @@ namespace ADTrader
 {
 	public class TerminalConnector
 	{
-		private readonly AlfaDirectClass alfaDirect;	//TODO configs
-		private const string account = "67693-000";
-		private const string placeCode = "FORTS";
+		private readonly AlfaDirectClass alfaDirect;
+		private readonly string account;
+		private readonly string placeCode;
 		private readonly string pCode;
-		
-		public bool Connected { get { return alfaDirect != null && alfaDirect.Connected; } }
 
-		public TerminalConnector(string pCode)
+        private static int LastFullCandleMinutes => ((DateTime.Now.Minute / 5 + 1) * 5) % 60;
+
+	    public bool Connected => alfaDirect != null && alfaDirect.Connected;
+	    public string LastResultMessage => alfaDirect.LastResultMsg;
+
+	    public TerminalConnector(string account, string placeCode, string pCode)
 		{
-			this.pCode = pCode;
-			alfaDirect = new AlfaDirectClass();
+		    this.account = account;
+		    this.placeCode = placeCode;
+		    this.pCode = pCode;
+		    alfaDirect = new AlfaDirectClass();
 		}
 
 		public List<Candle> GetCurrentDayCandles()
 		{
-			return GetCandles(DateTime.Now.Date);
-		}
+            var currentMinutes = LastFullCandleMinutes;
+            return GetCandles(DateTime.Now.AddMinutes(-10).AddHours(-2)).Where(c => c.Time.Minutes != currentMinutes).ToList();
+        }
 
 		public Candle GetLastFullCandle()
 		{
-			var currentMinutes = ((DateTime.Now.Minute/5 + 1)*5)%60;
-			return GetCandles(DateTime.Now.AddMinutes(-10).AddHours(-2)).Last(c => c.Time.Minutes != currentMinutes);
-		} 
+		    var currentDayCandles = GetCurrentDayCandles();
+            if (!currentDayCandles.Any())
+                throw new Exception("There is no candles in current day");
 
-		public int GetLastPrice()
+            return currentDayCandles.Last();
+		}
+
+	    public int GetLastPrice()
 		{
 			var localDbData = alfaDirect.GetLocalDBData("fin_info", "last_price", "p_code=" + pCode);
 			return int.Parse(localDbData.Substring(0, localDbData.IndexOf('|')));
@@ -63,11 +72,6 @@ namespace ADTrader
 		public void DropOrder(int orderNumber)
 		{
 			alfaDirect.DropOrder(orderNumber, null, null, null, null, null, -1);
-		}
-
-		public string GetLastResultMessage()
-		{
-			return alfaDirect.LastResultMsg;
 		}
 
 		private List<Candle> GetCandles(DateTime? dateFrom = null, DateTime? dateTo = null)

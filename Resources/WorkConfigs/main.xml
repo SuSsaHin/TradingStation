@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Configs>
+  <Connection>
+    <Account>67693-000</Account>
+    <PlaceCode>FORTS</PlaceCode>
+    <Tool>RTSI-9.15</Tool>
+  </Connection>
+  <Types>
+    <Stop>trailing</Stop>
+  </Types>
+  <TradeParams>
+    <StopLoss Size="800"/>
+    <BreakevenPercent Size="0.4"/>
+    <TrailingStopPercent Size="1.8" />
+    <Pegtop Size="70" />
+    <EndTime Size="PT23H30M"/>
+  </TradeParams>
+  <Logs>
+    <Directory>E:\RobotLogs</Directory>
+  </Logs>
+  <TradeController>
+    <TradeStartTime>PT10H30M</TradeStartTime>
+    <UpdatePeriod>500</UpdatePeriod>
+    <ServerCooldownPeriod>800</ServerCooldownPeriod>
+  </TradeController>
+</Configs>

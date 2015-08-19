@@ -15,10 +15,21 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeTools", "TradeTools\Tr
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{42B9B396-48A2-47AF-96E8-3DC07468CFD8}"
 	ProjectSection(SolutionItems) = preProject
-		Resources\TestsConfigs\default.xml = Resources\TestsConfigs\default.xml
 		Descroption.txt = Descroption.txt
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GUI", "GUI\GUI.csproj", "{C3E9C75B-E50C-43E3-BC6C-2F68101043BA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestConfigs", "TestConfigs", "{D27DD09D-98BF-4670-B553-FB31D0843C28}"
+	ProjectSection(SolutionItems) = preProject
+		Resources\TestsConfigs\default.xml = Resources\TestsConfigs\default.xml
 		Resources\TestsConfigs\main.xml = Resources\TestsConfigs\main.xml
 		Resources\TestsConfigs\test.xml = Resources\TestsConfigs\test.xml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WorkConfigs", "WorkConfigs", "{CE242DEC-ABBA-4D3C-B984-205592B0A8D8}"
+	ProjectSection(SolutionItems) = preProject
+		Resources\WorkConfigs\main.xml = Resources\WorkConfigs\main.xml
 	EndProjectSection
 EndProject
 Global
@@ -47,8 +58,16 @@ Global
 		{ECF0A961-873B-4DBC-9072-2B2B153AF265}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ECF0A961-873B-4DBC-9072-2B2B153AF265}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ECF0A961-873B-4DBC-9072-2B2B153AF265}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3E9C75B-E50C-43E3-BC6C-2F68101043BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3E9C75B-E50C-43E3-BC6C-2F68101043BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3E9C75B-E50C-43E3-BC6C-2F68101043BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3E9C75B-E50C-43E3-BC6C-2F68101043BA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D27DD09D-98BF-4670-B553-FB31D0843C28} = {42B9B396-48A2-47AF-96E8-3DC07468CFD8}
+		{CE242DEC-ABBA-4D3C-B984-205592B0A8D8} = {42B9B396-48A2-47AF-96E8-3DC07468CFD8}
 	EndGlobalSection
 EndGlobal

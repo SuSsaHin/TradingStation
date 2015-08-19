@@ -4,12 +4,17 @@ using TradeTools;
 
 namespace StatesRobot
 {
-	class CandlesFormer
+    public class CandlesFormer
 	{
 		private Candle candle;
-		private const int periodMins = 5;	//TODO configs
+		private readonly int periodMins;
 
-		public Candle AddTick(Tick tick)
+	    public CandlesFormer(int periodMins = 5)
+	    {
+		    this.periodMins = periodMins;
+	    }
+
+	    public Candle AddTick(Tick tick)
 		{
 			try
 			{

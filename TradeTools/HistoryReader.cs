@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using TradeTools;
 
-namespace Tests.Tools.History
+namespace TradeTools
 {
-	class HistoryReader
+	public static class HistoryReader
 	{
 		private const string dataPath = @"History\";
 		private const string ticksDirectory = @"Ticks";
@@ -52,6 +51,14 @@ namespace Tests.Tools.History
 									(int)decimal.Parse(fields[5], new CultureInfo("en-us")),
 									5);
 			return candle;
+		}
+
+		public static string SerializeCandle(this Candle candle)
+		{
+			var date = (candle.Date.Year*10000 + candle.Date.Month*100 + candle.Date.Day).ToString();
+			var time = (candle.DateTime.Hour * 10000 + candle.DateTime.Minute * 100 + candle.DateTime.Second).ToString();
+
+			return $"{date}\t{time}\t{candle.Open}\t{candle.High}\t{candle.Low}\t{candle.Close}";
 		}
 
 		public static string[] GetTicksFiles(string toolName)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using StatesRobot.States;
+using StatesRobot.States.Search;
 using TradeTools;
 using Utils.Events;
 
@@ -11,20 +12,22 @@ namespace StatesRobot
 		private readonly List<Candle> candles;
 		internal StatesFactory Factory { get; }
 		internal TradeAdvisor Advisor { get; }
-		internal int StopLossPrice { get; set; }
+	    public int StopLossPrice { get; set; }
 		internal int StopLossSize { get; }
 		internal int TrailingStopLoss { get;}
 		internal int BreakevenSize { get; }
 		internal int PegtopSize { get; }
 		internal TimeSpan EndTime { get; }
-
-		internal IReadOnlyList<Candle> Candles => candles;
-
 		internal IState CurrentState { get; set; }
 
-		public RobotContext(TradeParams tradeParams, StatesFactory factory, TradeAdvisor advisor, List<Candle> history = null)
+		public IReadOnlyList<Candle> Candles => candles;
+		public IExtremumsRepository ExtremumsRepository { get; }
+
+		private IState DefaultState => Factory.GetSearchState(this);
+
+        public RobotContext(TradeParams tradeParams, StatesFactory factory, TradeAdvisor advisor, List<Candle> history = null)
 		{
-			candles = history ?? new List<Candle>();	//IMPROVE историю хранить не нужно
+			candles = history ?? new List<Candle>();	//IMPROVE историю хранить не нужно (отправлять за историей к Advisor)
 			Advisor = advisor;
 			Factory = factory;
 
@@ -34,7 +37,8 @@ namespace StatesRobot
 			PegtopSize = tradeParams.PegtopSize;
 			EndTime = tradeParams.EndTime;
 
-			InitState();
+            CurrentState = DefaultState;
+            ExtremumsRepository = ((SearchState) CurrentState).ExtremumsRepo;
 		}
 
 		public ITradeEvent Process(Candle candle)
@@ -54,12 +58,7 @@ namespace StatesRobot
 		{
 			StopLossPrice = 0;
 			candles.Clear();
-			InitState();
-		}
-
-		private void InitState()
-		{
-			CurrentState = Factory.GetSearchState(this);
-		}
+            CurrentState = DefaultState;
+        }
 	}
 }

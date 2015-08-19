@@ -17,10 +17,10 @@ namespace Tests
 		[TestMethod]
 		public void TestAddDeal()
 		{
-			var results = new TradesResult();
+			var results = new TradesResult(0, 30);
 			results.AddDeal(new Deal(100, new DateTime(1, 1, 1, 10, 0, 0), true));
 			results.AddDeal(new Deal(150, new DateTime(1, 1, 1, 15, 0, 0), false));
-			Assert.That(results.Profit == 50 - TradesResult.Comission);
+			Assert.That(results.Profit == 50 - results.Comission);
 			Assert.That(results.DealsAreClosed);
 			Assert.That(results.DealsCount == 1);
 		}

@@ -11,13 +11,14 @@ namespace StatesRobot.States.Search
 {
 	class SearchState : IState
 	{
-		private readonly ExtremumsRepository extremumsRepo;
-		private readonly LinkedList<CandleNode> searchTree;
-		private readonly int pegTopSize;
+	    private readonly LinkedList<CandleNode> searchTree;
+	    private readonly int pegTopSize;
 
-		public SearchState(RobotContext context)
+	    internal readonly ExtremumsRepository ExtremumsRepo;
+
+	    public SearchState(RobotContext context)
 		{
-			extremumsRepo = new ExtremumsRepository();
+			ExtremumsRepo = new ExtremumsRepository();
 			searchTree = new LinkedList<CandleNode>();
 
 			for (int i = 0; i < context.Candles.Count; ++i)
@@ -40,7 +41,7 @@ namespace StatesRobot.States.Search
 			var bestSecondExtremum = AppendToTree(candle, currentIndex);
 
 			if (bestSecondExtremum == null)
-				return null;	//TODO SearchInfoEvent
+				return null;
 
 			if (NeedToTrade(context, bestSecondExtremum))
 			{
@@ -49,7 +50,7 @@ namespace StatesRobot.States.Search
 				return new DealEvent(deal);
 			}
 
-			return new SecondExtremumEvent(bestSecondExtremum, extremumsRepo.FirstMaximums, extremumsRepo.FirstMinimums);
+			return new SecondExtremumEvent(bestSecondExtremum, ExtremumsRepo.FirstMaximums, ExtremumsRepo.FirstMinimums);
 		}
 
 		private Extremum AppendToTree(Candle candle, int currentIndex)
@@ -80,7 +81,7 @@ namespace StatesRobot.States.Search
 						goto NextIteration;
 					}
 
-					var secondExtremum = extremumsRepo.AddExtremum(extremum);
+					var secondExtremum = ExtremumsRepo.AddExtremum(extremum);
 					if (secondExtremum != null && (lastSecondExtremum == null || lastSecondExtremum.DateTime < secondExtremum.DateTime))
 					{
 						lastSecondExtremum = secondExtremum;

@@ -22,8 +22,9 @@ namespace TradeTools
 		{ }
 
 	    public override string ToString()
-        {
-            return DateTime + " (" + CheckerIndex +  "): " + Value + ", " + (IsMinimum ? "min" : "max");
-        }
+	    {
+		    var direction = IsMinimum ? "minimum" : "maxaximum";
+		    return $"{DateTime}({CheckerIndex}): {Value}, {direction}";
+	    }
 	}
 }

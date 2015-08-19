@@ -46,11 +46,11 @@
     <Compile Include="Deal.cs" />
     <Compile Include="Events\DealEvent.cs" />
     <Compile Include="Events\EndEvent.cs" />
-    <Compile Include="Events\SearchInfoEvent.cs" />
     <Compile Include="Events\SecondExtremumEvent.cs" />
     <Compile Include="Events\StopLossEvent.cs" />
     <Compile Include="Events\StopLossMovingEvent.cs" />
     <Compile Include="Extremum.cs" />
+    <Compile Include="HistoryReader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tick.cs" />
   </ItemGroup>

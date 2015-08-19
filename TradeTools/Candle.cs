@@ -6,41 +6,26 @@ namespace TradeTools
 {
 	public class Candle
 	{
-		public List<Tick> Ticks { get; private set; }
+		public List<Tick> Ticks { get; }
 
 		public int Open { get; private set; }
 		public int Close { get; private set; }
 		public int High { get; private set; }
 		public int Low { get; private set; }
 
-		public int PeriodMins { get; private set; }
+		public int PeriodMins { get; }
 
 		private DateTime dateTime;
 
-		public bool IsLong
-		{
-			get { return Close > Open; }
-		}
+		public bool IsLong => Close > Open;
 
-		public DateTime Date
-		{
-			get { return dateTime.Date; }
-		}
+		public DateTime Date => dateTime.Date;
 
-		public TimeSpan Time
-		{
-			get { return dateTime.TimeOfDay; }
-		}
+		public TimeSpan Time => dateTime.TimeOfDay;
 
-		public DateTime DateTime
-		{
-			get { return dateTime; }
-		}
+		public DateTime DateTime => dateTime;
 
-	    public int InnerHeigth
-	    {
-            get { return Math.Abs(Open - Close); }
-	    }
+		public int InnerHeigth => Math.Abs(Open - Close);
 
 		public Candle(List<Tick> ticks, int periodMins)
 		{
@@ -105,7 +90,7 @@ namespace TradeTools
 
 		public override string ToString()
 		{
-			return string.Format("{0}\t{1}\t{2}\t{3}\t{4}", DateTime.ToString("u"), Open, High, Low, Close);
+			return $"{DateTime.ToString("u")}\t{Open}\t{High}\t{Low}\t{Close}";
 		}
 	}
 }

@@ -66,7 +66,6 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Tools\Configurator.cs" />
-    <Compile Include="Tools\History\HistoryReader.cs" />
     <Compile Include="Tools\History\HistoryRepository.cs" />
     <Compile Include="Tools\Printing\Mappers\TradeResultsFieldsMapper.cs" />
     <Compile Include="Tools\Printing\Printer.cs" />

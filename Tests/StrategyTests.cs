@@ -13,16 +13,16 @@ namespace Tests
     [TestClass]
 	public class StrategyTests
 	{
-		private void RunTest(TradeParams tradeParams, StatesFactory statesFactory, HistoryRepository repository, TradesPrinter printer)
+		private void RunTest(TradeParams tradeParams, Configurator configurator, TradesPrinter printer)
 		{
 			tradeParams.Validate();
 
-			var advisor = new TradeAdvisor(repository.Days.First().FiveMins);
-			var robot = new RobotContext(tradeParams, statesFactory, advisor);
-			var results = new TradesResult();
+			var advisor = new TradeAdvisor(configurator.Repository.Days.First().FiveMins);
+			var robot = new RobotContext(tradeParams, configurator.Factory, advisor);
+			var results = configurator.GetTradeResults();
 
 			//foreach (var day in repository.Days)
-			foreach (var day in repository.Days.Skip(1))
+			foreach (var day in configurator.Repository.Days.Skip(1))    //TODO перебирать параметры по абсолютному значению, а затем искать регрессию одних на другие
 			{
 				foreach (var candle in day.FiveMins)
 				{
@@ -51,10 +51,9 @@ namespace Tests
 		public void MainTest(string filename)
 		{
 			var configurator = new Configurator(filename);
-			var repository = configurator.Repository;
 			var printer = configurator.Printer;
 
-			configurator.Executor.Execute(tp => RunTest(tp, configurator.Factory, repository, printer));
+			configurator.Executor.Execute(tp => RunTest(tp, configurator, printer));
 			printer.PrintTable("MainTest");
 		}
 	}

@@ -10,19 +10,28 @@ using Utils.FieldsMapping;
 
 namespace Tests.Tools
 {
-	internal class TradesResult 	//TODO FieldNames
+	internal class TradesResult
 	{
+		public int Comission;
+
 		private readonly List<Trade> trades = new List<Trade>();
-		private readonly Stack<Deal> deals = new Stack<Deal>(); 
-		
-		private const int startDepoSize = 30000;	//TODO config
+		private readonly Stack<Deal> deals = new Stack<Deal>();
+
+		private readonly int startDepoSize;
 
 		private int globalMaximumIndex;
+		private int depoSize;
+		private int maxDepoSize;
 
-		private int depoSize = startDepoSize;
-		private int maxDepoSize = startDepoSize;
+		public TradesResult(int startDepoSize, int comission)
+		{
+			Comission = comission;
+			this.startDepoSize = startDepoSize;
 
-		public const int Comission = 30;
+			depoSize = startDepoSize;
+			maxDepoSize = startDepoSize;
+		}
+
 		public IReadOnlyList<Trade> Trades => trades;
 
 		public double MaxDropdownPercent { get; private set; }

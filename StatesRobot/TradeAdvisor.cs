@@ -47,6 +47,7 @@ namespace StatesRobot
 
 		public Advice GetAdvice(double dealPrice, bool trendIsLong)
 		{
+			return null;	//TODO rmove it!!!
 			const int maLength = 163;
 
 			if (!history.Any())

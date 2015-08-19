@@ -1,22 +1,27 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Runtime.Remoting.Contexts;
 using TradeTools;
 using Wintellect.PowerCollections;
 
 namespace StatesRobot.States.Search.Tools
 {
-	public class ExtremumsRepository
-	{
+    [Synchronization]
+	public class ExtremumsRepository : ContextBoundObject, IExtremumsRepository
+    {
 		private readonly OrderedSet<Extremum> firstMaximums;
 		private readonly OrderedSet<Extremum> firstMinimums;
 
 		private readonly OrderedSet<Extremum> secondMaximums;
 		private readonly OrderedSet<Extremum> secondMinimums;
 
-		public ICollection<Extremum> FirstMaximums { get { return firstMaximums.AsReadOnly(); } }
+		public ICollection<Extremum> FirstMaximums => firstMaximums.AsReadOnly();
+	    public ICollection<Extremum> FirstMinimums => firstMinimums.AsReadOnly();
 
-		public ICollection<Extremum> FirstMinimums { get { return firstMinimums.AsReadOnly(); } }
+        public ICollection<Extremum> SecondMaximums => secondMaximums.AsReadOnly();
+        public ICollection<Extremum> SecondMinimums => secondMinimums.AsReadOnly();
 
-		public ExtremumsRepository()
+        public ExtremumsRepository()
 		{
 			firstMaximums = new OrderedSet<Extremum>(CompareExtremums);
 			firstMinimums = new OrderedSet<Extremum>(CompareExtremums);

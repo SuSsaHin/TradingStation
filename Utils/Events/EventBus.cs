@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Remoting.Contexts;
 
 namespace Utils.Events
 {
-	public class EventBus	//TODO добавить асинхронность
+	[Synchronization]
+	public class EventBus : ContextBoundObject	//TODO добавить асинхронность
 	{
 		public delegate void EventCallback(ITradeEvent ev);
 		private readonly Dictionary<Type, EventCallback> delegates = new Dictionary<Type, EventCallback>();
@@ -26,7 +28,7 @@ namespace Utils.Events
 		public void FireEvent(ITradeEvent fired)
 		{
 			if (fired == null)
-				throw new ArgumentNullException("fired");
+				throw new ArgumentNullException(nameof(fired));
 
 			var key = fired.GetType();
 

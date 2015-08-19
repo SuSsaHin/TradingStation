@@ -24,24 +24,97 @@ namespace Tests.Tools
 		private LoopsGenerator<TradeParams> loopsExecutor;
 		private string workingDirectory;
 
+		private int startDepoSize;
+		private int comission;
+
 		public StatesFactory Factory { get; private set; }
 		public IExecutor<TradeParams> Executor => loopsExecutor;
 		public HistoryRepository Repository { get; private set; }
 		public TradesPrinter Printer { get; private set; }
+		public TradesResult GetTradeResults() => new TradesResult(startDepoSize, comission);
 
 		public Configurator(string configsName)
 		{
-			var document = XDocument.Load(configsName);
-			var testNode = document.Descendants("Test").Single();
-			var paramsNode = testNode.Descendants("Params").Single();
+			var root = Init(defaultConfigsPath, true);
+			var paramsNode = root.Element("Params");
+			if (paramsNode == null)
+				throw new Exception("Can't find Params node");
 
-			InitDefaults();
-			InitFactory(testNode.Descendants("Types").Single());
+			InitDefaultParams(paramsNode);
+
+			root = Init(configsName, true);
+			paramsNode = root.Element("Params") ?? new XElement("Params");
+			
 			InitLoops(paramsNode);
-			InitRepository(testNode.Descendants("Tool").Single());
 			InitTradesPrinter(paramsNode);
 
 			CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-us");
+		}
+
+		private XElement Init(string configsPath, bool requireAll)
+		{
+			var document = XDocument.Load(defaultConfigsPath);
+			var configs = document.Element("Configs");
+
+			if (configs == null)
+				throw new Exception("Can't read configs " + configsPath);
+
+			var element = configs.Element("StateTypes");
+			if (element != null)
+			{
+				InitFactory(element);
+			}
+			else if (requireAll)
+			{
+				throw new Exception("Can't find StateTypes node");
+			}
+
+			element = configs.Element("Tool");
+			if (element != null)
+			{
+				InitRepository(element);
+			}
+			else if (requireAll)
+			{
+				throw new Exception("Can't find Tool node");
+			}
+
+			element = configs.Element("Paths");
+			if (element != null)
+			{
+				InitPaths(element);
+			}
+			else if (requireAll)
+			{
+				throw new Exception("Can't find Paths node");
+			}
+
+			element = configs.Element("Circumstances");
+			if (element != null)
+			{
+				InitTradeResultsParams(element);
+			}
+			else if (requireAll)
+			{
+				throw new Exception("Can't find Circumstances node");
+			}
+
+			return configs;
+		}
+
+		private void InitTradeResultsParams(XElement circumstances)
+		{
+			var element = circumstances.Element("StartDepoSize");
+			if (element == null)
+				throw new Exception("Can't find StartDepoSize for TradeResults");
+
+			startDepoSize = (int) element;
+
+			element = circumstances.Element("Comission");
+			if (element == null)
+				throw new Exception("Can't find Comission for TradeResults");
+
+			comission = (int)element;
 		}
 
 		private void InitTradesPrinter(XElement parmeters)
@@ -57,21 +130,43 @@ namespace Tests.Tools
 			Repository = new HistoryRepository(tool.Value, isTicks != null && (bool)isTicks);
 		}
 
-		private void InitDefaults()
+		private void InitDefaultParams(XElement paramsNode)
 		{
-			var defaults = XDocument.Load(defaultConfigsPath);
+			var tradeParams = new TradeParams();
+			foreach (var param in paramsNode.Descendants())
+			{
+				var name = param.Name.LocalName;
+				if (!TradeParamsMapper.HasField(name))
+					throw new SettingsPropertyNotFoundException($"Can't found property {name}");
 
-			var paramsNode = defaults.Descendants("Params").Single();
-			loopsExecutor = new LoopsGenerator<TradeParams>(GetDefaultTradeParams(paramsNode));
+				TradeParamsMapper.SetValue(name, tradeParams, param.Attribute("Size"));
+			}
 
-			var pathsNode = defaults.Descendants("Paths").Single();
-			workingDirectory = pathsNode.Descendants("WorkingDirectory").Single().Value;
+			loopsExecutor = new LoopsGenerator<TradeParams>(tradeParams);
+		}
+
+		private void InitPaths(XElement pathsNode)
+		{
+			var node = pathsNode.Element("WorkingDirectory");
+			if (node != null)
+			{
+				workingDirectory = node.Value;
+			}
+
 			if (string.IsNullOrWhiteSpace(workingDirectory))
 				throw new Exception("You should specify working directory");
 
 			Directory.CreateDirectory(workingDirectory);
 
-			printsDir = pathsNode.Descendants("Prints").Single().Value;
+			node = pathsNode.Element("Prints");
+			if (node != null)
+			{
+				printsDir = node.Value;
+			}
+
+			if (string.IsNullOrWhiteSpace(workingDirectory))
+				throw new Exception("You should specify prints directory");
+
 			Directory.CreateDirectory(Path.Combine(workingDirectory, printsDir));
 		}
 
@@ -95,7 +190,11 @@ namespace Tests.Tools
 
 		private void InitFactory(XElement types)
 		{
-			var stopType = types.Descendants("Stop").Single().Value.ToLower();
+			var xElement = types.Element("Stop");
+			if (xElement == null)
+				throw new Exception("Can't find Stop state type");
+
+			var stopType = xElement.Value.ToLower();
 			StatesFactory.TradeStateTypes tsType;
 			switch (stopType)
 			{
@@ -110,20 +209,6 @@ namespace Tests.Tools
 					break;
 			}
 			Factory = new StatesFactory(tsType);
-		}
-
-		private TradeParams GetDefaultTradeParams(XElement paramsNode)
-		{
-			var tradeParams = new TradeParams();
-			foreach (var param in paramsNode.Descendants())
-			{
-				var name = param.Name.LocalName;
-				if (!TradeParamsMapper.HasField(name))
-					throw new SettingsPropertyNotFoundException($"Can't found property {name}");
-
-				TradeParamsMapper.SetValue(name, tradeParams, param.Attribute("Size"));
-			}
-			return tradeParams;
 		}
 	}
 }

@@ -1,0 +1,11 @@
+﻿<Window x:Class="GUI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" Height="350" Width="525"
+        Closing="MainWindow_OnClosing">
+    <Grid>
+        <RichTextBox Name="StateString" Height="33" Margin="0,286,0,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="507" IsReadOnly="True" BorderBrush="White"/>
+        <Button Name="Drop" Content="Print &#xD;&#xA;Extremums" HorizontalAlignment="Left" Height="52" Margin="415,29,0,0" VerticalAlignment="Top" Width="92" Click="PrintExtremums_Click"/>
+        <RichTextBox x:Name="LogsRichTextBox" HorizontalAlignment="Left" Height="243" Margin="10,10,0,0" VerticalAlignment="Top" Width="367" VerticalScrollBarVisibility="Auto" IsReadOnly="True" BorderBrush="White"/>
+    </Grid>
+</Window>
