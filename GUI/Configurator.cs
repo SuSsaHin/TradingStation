@@ -28,13 +28,7 @@ namespace GUI
 
 			var eventBus = new EventBus();
 
-			var logsDirectory = document.XPathSelectElement(@"Configs/Logs/Directory")?.Value;
-			if (string.IsNullOrWhiteSpace(logsDirectory))
-				throw new Exception("You should specify logs directory");
-
-			Directory.CreateDirectory(logsDirectory);
-
-			InitLogs(logsDirectory, window);
+			InitLogs(window);
 			InitConnector(document.Descendants("Connection").Single());
 
 			var factory = GetFactory(document.Descendants("Types").Single());
@@ -44,7 +38,8 @@ namespace GUI
 			var advisor = new TradeAdvisor(currentDayCandles);	//TODO больше истории
 
 			RobotContext = new RobotContext(tradeParams, factory, advisor, currentDayCandles);
-			InitTradeController(document.Descendants("TradeController").Single(), eventBus, logsDirectory);
+			InitTradeController(document.Descendants("TradeController").Single(), eventBus,
+				LogManager.Configuration.Variables["WorkingDirectory"]);
 		}
 
 		private void InitTradeController(XElement controllerNode, EventBus eventBus, string workingDirectory)
@@ -65,7 +60,7 @@ namespace GUI
                             );
 		}
 
-		private void InitLogs(string logsDirectory, MainWindow window)
+		private void InitLogs(MainWindow window)
 		{
 			var textTarget = new WpfRichTextBoxTarget
 			{
@@ -98,8 +93,7 @@ namespace GUI
 
 			LogManager.Configuration.AddTarget(asyncStateWrapper.Name, asyncStateWrapper);
 			LogManager.Configuration.LoggingRules.Insert(0, new LoggingRule("StateLogger", LogLevel.Trace, asyncStateWrapper) {Final = true});
-			
-			LogManager.Configuration.Variables["WorkingDirectory"] = logsDirectory;
+
 			LogManager.ReconfigExistingLoggers();
 		}
 

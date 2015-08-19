@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using NLog;
 using StatesRobot.States;
 using StatesRobot.States.Search;
 using TradeTools;
@@ -9,6 +10,8 @@ namespace StatesRobot
 {
 	public class RobotContext
 	{
+		internal static Logger Logger = LogManager.GetCurrentClassLogger();
+
 		private readonly List<Candle> candles;
 		internal StatesFactory Factory { get; }
 		internal TradeAdvisor Advisor { get; }
@@ -27,6 +30,7 @@ namespace StatesRobot
 
         public RobotContext(TradeParams tradeParams, StatesFactory factory, TradeAdvisor advisor, List<Candle> history = null)
 		{
+			Logger.Debug("I'm started");
 			candles = history ?? new List<Candle>();	//IMPROVE историю хранить не нужно (отправлять за историей к Advisor)
 			Advisor = advisor;
 			Factory = factory;

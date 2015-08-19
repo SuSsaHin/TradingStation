@@ -15,9 +15,6 @@
     <Pegtop Size="70" />
     <EndTime Size="PT23H30M"/>
   </TradeParams>
-  <Logs>
-    <Directory>E:\RobotLogs</Directory>
-  </Logs>
   <TradeController>
     <TradeStartTime>PT10H30M</TradeStartTime>
     <UpdatePeriod>500</UpdatePeriod>
