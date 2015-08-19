@@ -5,6 +5,10 @@ namespace TradeTools
 	public class Deal
 	{
 		public Advice Advice { get; }
+		public bool IsBuy { get; }
+		public int Price { get; }
+		public DateTime DateTime { get; }
+
 		public Deal(int price, DateTime dateTime, bool isBuy, Advice advice = null)
 		{
 			Price = price;
@@ -13,8 +17,6 @@ namespace TradeTools
 			Advice = advice;
 		}
 
-		public bool IsBuy { get; private set; }
-		public int Price { get; private set; }
-		public DateTime DateTime { get; private set; }
+		public override string ToString() => $"{DateTime}: {Price} {(IsBuy ? "buy" : "sell")}";
 	}
 }

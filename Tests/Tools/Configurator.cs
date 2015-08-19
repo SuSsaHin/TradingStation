@@ -42,7 +42,7 @@ namespace Tests.Tools
 
 			InitDefaultParams(paramsNode);
 
-			root = Init(configsName, true);
+			root = Init(configsName, false);
 			paramsNode = root.Element("Params") ?? new XElement("Params");
 			
 			InitLoops(paramsNode);
@@ -53,7 +53,7 @@ namespace Tests.Tools
 
 		private XElement Init(string configsPath, bool requireAll)
 		{
-			var document = XDocument.Load(defaultConfigsPath);
+			var document = XDocument.Load(configsPath);
 			var configs = document.Element("Configs");
 
 			if (configs == null)
@@ -190,13 +190,13 @@ namespace Tests.Tools
 
 		private void InitFactory(XElement types)
 		{
-			var xElement = types.Element("Stop");
+			var xElement = types.Element("Trade");
 			if (xElement == null)
-				throw new Exception("Can't find Stop state type");
+				throw new Exception("Can't find Trade state type");
 
-			var stopType = xElement.Value.ToLower();
+			var tradeType = xElement.Value.ToLower();
 			StatesFactory.TradeStateTypes tsType;
-			switch (stopType)
+			switch (tradeType)
 			{
 				case "breakeven":
 					tsType = StatesFactory.TradeStateTypes.Breakeven;

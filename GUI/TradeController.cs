@@ -89,6 +89,9 @@ namespace GUI
 		private void SerializeCandles(string fileName)
 		{
 			PrintToFile(fileName, robot.Candles.Select(c => c.SerializeCandle()));
+			var formattedCandles = new List<string> {"DateTime\tOpen\tHigh\tLow\tClose"}
+									.Concat(robot.Candles.Select(c => c.ToString()));
+			PrintToFile("formatted" + fileName, formattedCandles);
 		}
 
 		private void PrintExtremums(string fileName)

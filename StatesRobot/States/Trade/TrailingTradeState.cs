@@ -24,6 +24,7 @@ namespace StatesRobot.States.Trade
 						&& newPrice < candle.Close)
 					{
 						context.StopLossPrice = newPrice;
+						context.Logger.Debug("Trailing moving. StopPrice: {0}, Candle: {1}", context.StopLossPrice, candle);
 						result = new StopLossMovingEvent(context.StopLossPrice, TrendIsLong);
 					}
 				}
@@ -37,6 +38,7 @@ namespace StatesRobot.States.Trade
 						&& newPrice > candle.Close)
 					{
 						context.StopLossPrice = newPrice;
+						context.Logger.Debug("Trailing moving. StopPrice: {0}, Candle: {1}", context.StopLossPrice, candle);
 						result = new StopLossMovingEvent(context.StopLossPrice, TrendIsLong);
 					}
 				}

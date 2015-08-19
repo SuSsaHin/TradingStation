@@ -78,19 +78,10 @@ namespace TradeTools
 			return false;
 		}
 
-		public bool IsOuterTo(Candle c)
-		{
-			return High >= c.High && Low <= c.Low;
-		}
+		public bool IsOuterTo(Candle c) => High >= c.High && Low <= c.Low;
 
-		public bool IsInnerTo(Candle c)
-		{
-			return High <= c.High && Low >= c.Low;
-		}
+		public bool IsInnerTo(Candle c) => High <= c.High && Low >= c.Low;
 
-		public override string ToString()
-		{
-			return $"{DateTime.ToString("u")}\t{Open}\t{High}\t{Low}\t{Close}";
-		}
+		public override string ToString() => $"{DateTime.ToString("u")},\t{Open},\t{High},\t{Low},\t{Close}";
 	}
 }

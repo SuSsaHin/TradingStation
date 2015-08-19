@@ -10,7 +10,7 @@ namespace StatesRobot
 {
 	public class RobotContext
 	{
-		internal static Logger Logger = LogManager.GetCurrentClassLogger();
+		internal Logger Logger = LogManager.GetCurrentClassLogger();
 
 		private readonly List<Candle> candles;
 		internal StatesFactory Factory { get; }

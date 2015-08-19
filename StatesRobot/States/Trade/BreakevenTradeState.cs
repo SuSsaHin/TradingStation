@@ -24,6 +24,8 @@ namespace StatesRobot.States.Trade
 				hasBreakeven = true;
 
 				context.StopLossPrice = GetStopPrice(StartPrice, -context.BreakevenSize);
+
+				context.Logger.Debug("Breakeven. StopPrice: {0}, Candle: {1}", context.StopLossPrice, candle);
 				return new StopLossMovingEvent(context.StopLossPrice, TrendIsLong);
 			}
 			

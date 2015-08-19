@@ -43,9 +43,9 @@ namespace StatesRobot
 			return new SearchState(context);
 		}
 
-		public IState GetEndState()
+		public IState GetEndState(RobotContext context)
 		{
-			return new EndState();
+			return new EndState(context);
 		}
 	}
 }

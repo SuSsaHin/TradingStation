@@ -18,6 +18,8 @@ namespace StatesRobot.States.Search
 
 	    public SearchState(RobotContext context)
 		{
+			context.Logger.Debug("Change state to Search");
+
 			ExtremumsRepo = new ExtremumsRepository();
 			searchTree = new LinkedList<CandleNode>();
 
@@ -31,7 +33,8 @@ namespace StatesRobot.States.Search
 
 		public ITradeEvent StopTrading(RobotContext context)
 		{
-			context.CurrentState = context.Factory.GetEndState();
+			context.Logger.Debug("Stop trading command");
+			context.CurrentState = context.Factory.GetEndState(context);
 			return new EndEvent();
 		}
 
@@ -45,7 +48,10 @@ namespace StatesRobot.States.Search
 
 			if (NeedToTrade(context, bestSecondExtremum))
 			{
+				context.Logger.Debug("Need to trade, extremum: {0}", bestSecondExtremum);
 				var deal = new Deal(candle.Close, candle.DateTime, bestSecondExtremum.IsMinimum, context.Advisor.GetAdvice(candle.Close, bestSecondExtremum.IsMinimum));
+
+				context.Logger.Debug("Deal: {0}", deal);
 				context.CurrentState = context.Factory.GetTradeState(context, deal);
 				return new DealEvent(deal);
 			}
@@ -104,7 +110,9 @@ namespace StatesRobot.States.Search
 
 		private bool NeedToTrade(RobotContext context, Extremum secondExtremum)
 		{
-			return secondExtremum.IsMinimum == IsTrendLong(context.Candles);
+			var isTrendLong = IsTrendLong(context.Candles);
+			context.Logger.Debug("NeedToTrade? extremum:{0}, trend:{1}", secondExtremum.IsMinimum, isTrendLong);
+			return secondExtremum.IsMinimum == isTrendLong;
 		}
 
 		private bool IsSkipped(Candle previous, Candle current)
