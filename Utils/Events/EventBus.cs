@@ -1,28 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Runtime.Remoting.Contexts;
+using System.Collections.Concurrent;
+using NLog;
 
 namespace Utils.Events
 {
-	[Synchronization]
-	public class EventBus : ContextBoundObject	//TODO добавить асинхронность
+	public class EventBus
 	{
 		public delegate void EventCallback(ITradeEvent ev);
-		private readonly Dictionary<Type, EventCallback> delegates = new Dictionary<Type, EventCallback>();
+		private readonly ConcurrentDictionary<Type, EventCallback> delegates = new ConcurrentDictionary<Type, EventCallback>();
+		private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
 		public void AddCallback(Type eventType, EventCallback callback)
 		{
 			if (eventType.GetInterface(typeof(ITradeEvent).Name) == null)
 				throw new ArgumentException("Event type should implements " + typeof(ITradeEvent).Name);
 
-			if (!delegates.ContainsKey(eventType))
-			{
-				delegates[eventType] = callback;
-				return;
-			}
-
-			delegates[eventType] += callback;
+			delegates.AddOrUpdate(eventType, callback, (type, eventCallback) => eventCallback + callback);
 		}
 
 		public void FireEvent(ITradeEvent fired)
@@ -35,14 +28,18 @@ namespace Utils.Events
 			if (!delegates.ContainsKey(key))
 				return;
 
+			EventCallback callbacks;
+			while (!delegates.TryGetValue(key, out callbacks))
+			{ }
+
 			try
 			{
-				delegates[key].Invoke(fired);
+				callbacks.Invoke(fired);
 			}
 			catch (Exception ex)
 			{
-				File.WriteAllText("lastEventError.txt", ex.ToString());	//TODO заменить на логгер
-			}
+				Logger.Error(ex);
+            }
 		}
 	}
 }

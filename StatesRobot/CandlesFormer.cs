@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using NLog;
 using TradeTools;
 
 namespace StatesRobot
 {
     public class CandlesFormer
-	{
+    {
+	    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 		private Candle candle;
 		private readonly int periodMins;
 
@@ -25,10 +27,10 @@ namespace StatesRobot
 					return res;
 				}
 			}
-			catch (Exception)	
+			catch (Exception ex)	
 			{
-				//TODO Logs
-			}
+				Logger.Warn(ex);
+            }
 
 			return candle;
 		}

@@ -2,10 +2,7 @@
 using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows;
-using GUI.Helper;
 using NLog;
-using NLog.Config;
-using NLog.Targets.Wrappers;
 
 namespace GUI
 {
@@ -15,6 +12,7 @@ namespace GUI
 	public partial class MainWindow
 	{
 		private readonly TradeController tradeController;
+		private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 		//private TerminalConnector connector;
 		//private int orderNumber = -1;
 
@@ -31,20 +29,8 @@ namespace GUI
 			}
 			catch (Exception e)
 			{
-				AddLogs(e.Message);
-			}
-		}
-		
-		public void AddLogs(string text)
-		{
-			//TODO!!
-			//LogsListBox.Items.Add(text);
-		}
-
-		public void SetState(string state)
-		{
-			//TODO!!
-			//StateString.Content = state;
+				Logger.Error(e);
+            }
 		}
 
 		private void MainWindow_OnClosing(object sender, CancelEventArgs e)
